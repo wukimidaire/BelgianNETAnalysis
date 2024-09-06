@@ -56,11 +56,7 @@ def main():
     # Convert data to a pandas DataFrame
     df = pd.DataFrame(data, columns=[desc[0] for desc in cur.description])
 
-    # Add a new section to display the complete dataframe
-    st.subheader("Complete Dataset")
-    st.write("This table shows the complete dataset from the a_final_kenze_companies query:")
-    st.dataframe(df)
-
+    # Remove the "Complete Dataset" section and associated table
 
     # Modify the filtering section
     st.sidebar.title("Filters")
@@ -115,7 +111,7 @@ def main():
     
     """)
 
-    # New section: Query Results Graph
+    # Step 1: Search .NET Profiles
     st.markdown("### 📊 Step 1: Search .NET Profiles")
 
     with st.expander("View Documentation", expanded=False):
@@ -196,6 +192,123 @@ def main():
         st.metric(".NET Profiles", f"{net_profiles:,}")
     with col3:
         st.metric("Unique Companies", f"{distinct_companies:,}")
+
+    # Step 2: Company List Creation
+    st.markdown("### 📊 Step 2: Company List Creation")
+
+    with st.expander("View Documentation", expanded=False):
+        st.markdown("""
+        After identifying .NET developers from LinkedIn profiles, we compiled a list of unique companies that employ these developers. This step involved:
+
+        1. Extracting company information from the .NET developers' profiles.
+        2. Removing duplicates to create a list of unique companies.
+        3. Validating the company information to ensure accuracy.
+
+        This list serves as the foundation for our further analysis, providing a targeted set of companies known to employ .NET developers in Flanders.
+        """)
+
+    # Step 3: Company Data Collection
+    st.markdown("### 📊 Step 3: Company Data Collection")
+
+    with st.expander("View Documentation", expanded=False):
+        st.markdown("""
+        Using the list of companies identified in Step 2, we collected comprehensive data from LinkedIn Company Pages. This process involved:
+
+        1. Scraping public information from each company's LinkedIn page.
+        2. Gathering key data points such as:
+           - Company size (employee count)
+           - Industry
+           - Location
+           - Founded year
+           - Specialties
+           - Website URL
+        3. Organizing and structuring the collected data for analysis.
+
+        This step enriches our dataset with valuable company-level information, allowing for more in-depth analysis and insights about the organizations employing .NET developers in Flanders.
+        """)
+
+    # Step 4: Employee Profile Scraping
+    st.markdown("### 📊 Step 4: Employee Profile Scraping")
+
+    with st.expander("View Documentation", expanded=False):
+        st.markdown("""
+        In this step, we expanded our data collection to include profiles of all employees from the companies identified in Step 2. This process involved:
+
+        1. Systematically scraping public LinkedIn profiles of employees from each company.
+        2. Collecting data on job titles, skills, experience, and other relevant information.
+        3. Ensuring data privacy compliance by only collecting publicly available information.
+
+        This comprehensive employee data provides a deeper understanding of the workforce composition in companies employing .NET developers.
+        """)
+
+    # Step 5: Employee Labeling
+    st.markdown("### 📊 Step 5: Employee Labeling")
+
+    with st.expander("View Documentation", expanded=False):
+        st.markdown("""
+        After collecting employee profiles, we labeled them based on specific criteria:
+
+        1. '.NET' skills: Identifying employees with .NET-related skills or experience.
+        2. Department: Categorizing employees into departments (e.g., IT, Engineering, Marketing).
+        3. Seniority: Classifying employees by seniority level (e.g., Junior, Senior, Lead).
+
+        This labeling process allows for more granular analysis of the workforce, particularly focusing on the distribution and roles of .NET developers within these companies.
+        """)
+
+    # Step 6: Google My Business (GMB) Profile Scraping
+    st.markdown("### 📊 Step 6: Google My Business (GMB) Profile Scraping")
+
+    with st.expander("View Documentation", expanded=False):
+        st.markdown("""
+        To gather additional business information, we scraped Google My Business profiles for the companies in our list:
+
+        1. Automating searches for each company on Google My Business.
+        2. Extracting key information such as:
+           - Business description
+           - Address and contact information
+           - Customer reviews and ratings
+           - Business hours
+           - Photos and posts
+        3. Integrating this data with our existing dataset for a more comprehensive view of each company.
+
+        This step provides valuable context about the public presence and customer perception of these companies.
+        """)
+
+    # Step 7: Company Website Scraping
+    st.markdown("### 📊 Step 7: Company Website Scraping")
+
+    with st.expander("View Documentation", expanded=False):
+        st.markdown("""
+        We then turned our attention to the companies' own websites, with a particular focus on their job pages:
+
+        1. Developing web scrapers tailored to each company's website structure.
+        2. Extracting information such as:
+           - Current job openings, especially for .NET positions
+           - Company culture and values
+           - Products or services offered
+           - Recent news or blog posts
+        3. Analyzing the collected data to identify trends in hiring practices and technology preferences.
+
+        This step provides insights into the companies' current needs and growth trajectories, especially in relation to .NET development.
+        """)
+
+    # Step 8: Financial Data Scraping
+    st.markdown("### 📊 Step 8: Financial Data Scraping")
+
+    with st.expander("View Documentation", expanded=False):
+        st.markdown("""
+        The final step involved collecting financial data to assess the economic standing of these companies:
+
+        1. Identifying reliable sources of financial data for Belgian companies.
+        2. Scraping key financial metrics such as:
+           - Annual revenue
+           - Profit margins
+           - Growth rates
+           - Employee count over time
+        3. Compiling and standardizing the financial data for comparative analysis.
+
+        This financial information provides context on the economic health and scale of companies employing .NET developers in Flanders, allowing for more comprehensive market analysis.
+        """)
 
     # Create a geo map
     if 'latitude' in filtered_df.columns and 'longitude' in filtered_df.columns:
