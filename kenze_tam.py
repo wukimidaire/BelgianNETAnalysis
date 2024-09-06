@@ -55,7 +55,7 @@ st.markdown("""
 
 # Streamlit app
 def main():
-    st.title("Organizations in Flanders Employ .NET Expertise")
+    st.title("Belgian Organizations Employing in .NET")
 
     # Connect to the database and fetch data
     conn = connect_to_db()
@@ -73,8 +73,6 @@ def main():
     st.write("This table shows the complete dataset from the a_final_kenze_companies query:")
     st.dataframe(df)
 
-    # After creating the DataFrame, let's print the column names to see what we have
-    st.write("Available columns:", df.columns.tolist())
 
     # Modify the filtering section
     st.sidebar.title("Filters")
@@ -269,7 +267,7 @@ def main():
 
                 # Add a table with company data
                 st.subheader("Filtered Company Data")
-                columns_to_display = ['company_name', 'industry', 'employee_count']
+                columns_to_display = ['company_name', 'industry', 'employee_count', 'total', 'it_engineering', 'net_profile', 'net_profile_vs_total_ratio', 'it_team_percentage', 'it_executive_vs_it_specialist_ratio', 'specialist_vs_total_ratio', 'net_profile_vs_it_engineering_ratio', 'technical_executive', 'operations', 'customer_success', 'finance,', 'sales','marketing','human_resources', 'specialist', 'senior', 'executive', 'advisor', 'cli_url', 'founded', 'hq_city', 'tagline', 'cli_website', 'vat_number', 'cover_image', 'description', 'followercount', 'universal_name', 'logo_resulution', 'employee_count_range', 'equity', 'fte_employees', 'profit_loss', 'gross_margin', 'cid', 'gmb_title', 'rating', 'gmb_address', 'category', 'phone_number', 'rating_count', 'wc_description', 'wc_business_type', 'wc_hiring', 'wc_about_section', 'wc_pricing_mentioned', 'wc_trial_available', 'wc_keywords', 'wc_career_urls', 'wc_social_media', 'wc_open_positions', 'wc_ideal_customer_profile', 'wc_case_studies', 'wc_contact_info' ] 
                 if 'net_dev_count' in filtered_map_df.columns:
                     columns_to_display.append('net_dev_count')
                 
@@ -277,7 +275,24 @@ def main():
                 available_columns = [col for col in columns_to_display if col in filtered_map_df.columns]
                 
                 if available_columns:
-                    st.dataframe(filtered_map_df[available_columns].reset_index(drop=True), use_container_width=True)
+                    total_results = len(filtered_map_df)
+                    st.dataframe(filtered_map_df[available_columns].head(10).reset_index(drop=True), use_container_width=True)
+                    st.info(f"Total results: {total_results}. Showing top 10 companies, all companies will be enabled in final delivery.")
+                    
+                    # New download section with info
+                    st.markdown("---")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        csv = filtered_map_df[available_columns].to_csv(index=False)
+                        st.download_button(
+                            label="Download data as CSV",
+                            data=csv,
+                            file_name="company_data.csv",
+                            mime="text/csv",
+                            disabled=True
+                        )
+                    with col2:
+                        st.info("The download CSV button will be enabled in the final delivery.")
                 else:
                     st.warning("No relevant columns available to display.")
             else:
