@@ -764,7 +764,7 @@ def main():
 
     with st.expander("View Documentation", expanded=False):
         st.markdown("""
-        The final step involved collecting financial data to assess the economic standing of these companies:
+        This step involves collecting financial data to assess the economic standing of these companies:
 
         1. Identifying reliable sources of financial data for Belgian companies.
         2. Scraping key financial metrics such as:
@@ -776,6 +776,99 @@ def main():
 
         This financial information provides context on the economic health and scale of companies employing .NET developers in Flanders, allowing for more comprehensive market analysis.
         """)
+
+    # Execute the query for Step 7
+    cur.execute("""
+    WITH kenze_profile_search AS (
+        SELECT DISTINCT
+            companyid
+        FROM
+            kenze_profile_search
+        WHERE
+            companyid IS NOT NULL
+            AND companyid != ''
+            AND net_profile = TRUE
+    ),
+    cli_search AS (
+        SELECT
+            company_id,
+            enrichment_timestamp, 
+            serper_addressscrape_timestamp, 
+            vat_scrape_timestamp,
+            website, 
+            hq_line1, 
+            hq_postalcode, 
+            company_name, 
+            embed_website_timestamp
+        FROM
+            cli
+    ),
+    financial_search AS ( 
+        SELECT 
+            company_id, 
+            year, 
+            ROUND(equity, 0) AS equity, 
+            employees AS fte_employees, 
+            ROUND(profit_loss, 0) AS profit_loss, 
+            ROUND(gross_margin, 0) AS gross_margin,
+            update_timestamp
+        FROM (
+            SELECT 
+                company_id, 
+                year, 
+                equity, 
+                employees, 
+                profit_loss, 
+                gross_margin,
+                update_timestamp,
+                ROW_NUMBER() OVER (PARTITION BY company_id ORDER BY year DESC) AS rn
+            FROM 
+                financial_data
+        ) AS subquery
+        WHERE rn = 1
+    )
+
+    SELECT
+        count(a.companyid) AS total_companies,
+        ROUND(COUNT(CASE WHEN b.vat_scrape_timestamp IS NOT NULL THEN 1 END) * 100.0 / count(a.companyid), 2) AS pct_financial_data_enrichment
+    FROM
+        kenze_profile_search AS a
+    FULL JOIN cli_search AS b
+        ON a.companyid = b.company_id::VARCHAR
+    LEFT JOIN financial_search AS d
+        ON a.companyid = d.company_id::VARCHAR
+    WHERE
+        a.companyid IS NOT NULL;
+    """)
+
+    result = cur.fetchone()
+    total_companies, pct_financial_data_enrichment = result
+
+    # Calculate the percentage of companies without financial data
+    pct_no_financial_data = 100 - pct_financial_data_enrichment
+
+    # Create a pie chart
+    fig = go.Figure(data=[go.Pie(
+        labels=['Financial Data Available', 'No Financial Data Available'],
+        values=[pct_financial_data_enrichment, pct_no_financial_data],
+        hole=.3,
+        marker_colors=['#66b3ff', '#ff9999']
+    )])
+
+    fig.update_layout(
+        title="Financial Data Enrichment Progress",
+        annotations=[dict(text=f'Total: {total_companies}', x=0.5, y=0.5, font_size=20, showarrow=False)]
+    )
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Display additional information
+    st.info(f"""
+    - Total companies: {total_companies}
+    - Companies with financial data: {round(pct_financial_data_enrichment, 2)}%
+    - Companies without financial data: {round(pct_no_financial_data, 2)}%
+    """)
 
     # Create a geo map
     if 'latitude' in filtered_df.columns and 'longitude' in filtered_df.columns:
