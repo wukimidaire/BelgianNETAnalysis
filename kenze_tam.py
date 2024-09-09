@@ -525,19 +525,118 @@ def main():
 
     with st.expander("View Documentation", expanded=False):
         st.markdown("""
-        To gather additional business information, we scraped Google My Business profiles for the companies in our list:
+        To enhance the accuracy and completeness of our company data, we collect Google My Business (GMB) profiles. 
+        This step is crucial for obtaining additional financial data and gaining a more comprehensive view of each company's size, industry, and location.
 
-        1. Automating searches for each company on Google My Business.
-        2. Extracting key information such as:
-           - Business description
-           - Address and contact information
-           - Customer reviews and ratings
-           - Business hours
-           - Photos and posts
-        3. Integrating this data with our existing dataset for a more comprehensive view of each company.
+        Key aspects of this process include:
 
-        This step provides valuable context about the public presence and customer perception of these companies.
+        1. Automated searches:
+           - Developed a system to automatically search for each company on Google My Business
+           - Implemented measures to handle rate limiting and ensure efficient data collection
+
+        2. Data extraction:
+           - Google My Business activity description
+           - Precise address and contact details
+           - Customer reviews and overall ratings
+           - ...
+
+        3. Data integration:
+           - Merged GMB data with our existing dataset
+           - Resolved conflicts and discrepancies between different data sources
+           - Standardized data formats for consistent analysis
+
+        Benefits of this approach:
+        - Improved data accuracy: Cross-referencing information from multiple sources
+        - Enhanced company profiles: More detailed and up-to-date information
+        - Better location data: Precise addresses for improved geographical analysis
+        - Customer insights: Reviews and ratings provide a sense of company reputation
+
+        This step significantly enriches our dataset, providing valuable context about each company's public presence, customer perception, and local business operations. 
+        The additional data points allow for more nuanced analysis and insights into the .NET development landscape in Belgium.
         """)
+
+    # Execute the query
+    cur.execute("""
+    WITH kenze_profile_search AS (
+        SELECT DISTINCT
+            companyid
+        FROM
+            kenze_profile_search
+        WHERE
+            companyid IS NOT NULL
+            AND companyid != ''
+            AND net_profile = TRUE
+    ),
+    cli_search AS (
+        SELECT
+            company_id,
+            enrichment_timestamp, 
+            serper_addressscrape_timestamp, 
+            website, 
+            hq_line1, 
+            hq_postalcode, 
+            company_name
+        FROM
+            cli
+    ),
+    gmb_search AS ( 
+        SELECT 
+            company_id AS gmb_company_id 
+        FROM 
+            google_my_business_locations
+    ),
+    joined_data AS (
+        SELECT
+            a.companyid,
+            b.company_id,
+            c.gmb_company_id
+        FROM
+            kenze_profile_search AS a
+            LEFT JOIN cli_search AS b ON a.companyid = b.company_id::VARCHAR
+            LEFT JOIN gmb_search AS c ON a.companyid = c.gmb_company_id::VARCHAR
+        WHERE
+            a.companyid IS NOT NULL
+            AND b.company_id IS NOT NULL
+            AND b.serper_addressscrape_timestamp IS NOT NULL
+    )
+    SELECT
+        COUNT(*) AS total_companies,
+        ROUND(
+            (COUNT(CASE WHEN gmb_company_id IS NULL THEN 1 END) * 100.0) / COUNT(*),
+            2
+        ) AS gmb_companies_not_found 
+    FROM
+        joined_data
+    """)
+
+    result = cur.fetchone()
+    total_companies, gmb_companies_not_found = result
+
+    # Calculate the percentage of companies found on GMB
+    gmb_companies_found = 100 - gmb_companies_not_found
+
+    # Create a pie chart
+    fig = go.Figure(data=[go.Pie(
+        labels=['Found on GMB', 'Not Found on GMB'],
+        values=[gmb_companies_found, gmb_companies_not_found],
+        hole=.3,
+        marker_colors=['#66b3ff', '#ff9999']
+    )])
+
+    fig.update_layout(
+        title="Google My Business (GMB) Profile Coverage",
+        annotations=[dict(text=f'Total: {total_companies}', x=0.5, y=0.5, font_size=20, showarrow=False)]
+    )
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Display additional information
+    st.info(f"""
+    - Total companies: {total_companies}
+    - Companies found on GMB: {round(gmb_companies_found, 2)}%
+    - Companies not found on GMB: {gmb_companies_not_found}%
+    """)
 
     # Step 6: Company Website Scraping
     st.markdown("### 📊 Step 6: Company Website Scraping")
