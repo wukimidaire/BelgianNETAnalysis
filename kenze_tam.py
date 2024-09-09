@@ -226,7 +226,9 @@ def main():
            - ...
         3. Organizing and structuring the collected data for analysis.
 
-        This step enriches our dataset with valuable company-level information, allowing for more in-depth analysis and insights about the organizations employing .NET developers in Flanders.
+        This step enriches our dataset with valuable company-level information, 
+        allowing for more in-depth analysis and insights about the organizations employing .NET developers in Flanders.
+        
         Note: Companies associated with .NET developer profiles that have an empty company_id are excluded from the final dataset. The impact on completeness is expected to be minimal.
         """)
 
