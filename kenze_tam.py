@@ -9,6 +9,10 @@ import folium
 import plotly.graph_objects as go
 import plotly.express as px
 
+
+# Set page config as the first Streamlit command, outside of any function
+st.set_page_config(layout="wide", page_title="Belgian .NET Organizations Analysis")
+
 # Function to connect to the database
 def connect_to_db():
     conn = psycopg2.connect(
@@ -20,89 +24,124 @@ def connect_to_db():
     )
     return conn
 
-
-
 # Streamlit app
 def main():
-    st.set_page_config(layout="wide", page_title="Belgian .NET Organizations Analysis")
+    try:
+        conn = connect_to_db()
+        st.success("Successfully connected to the database!")
+    except Exception as e:
+        st.error(f"Failed to connect to the database: {str(e)}")
+        return  # Exit the function if connection fails
 
     st.title("Belgian Organizations Employing .NET Developers")
+    # Custom CSS to style the container
+    st.markdown("""
+    <style>
+        .stContainer {
+            background-color: #f0f2f6;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
-    # Project Overview
-    st.markdown("## 🔍 Project Overview")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("### Objective")
+    # Create a container for the entire section
+    with st.container():
+        # Project Overview
         st.markdown("""
-        Maps the Belgian .NET ecosystem, offering data-driven insights to guide strategic decisions.
-        The project uses LinkedIn to identify companies with .NET developers and aggregates data from various sources.
-        The data is analyzed to reveal .NET developer distribution, company profiles, hiring trends, and department structures.
-        """)
-        
-        st.markdown("### Key Insights")
-        st.markdown("""
-        1. **Company Identification**: 1094 unique companies employing .NET developers identified in Flanders.
-        2. **Developer Distribution**: Analysis of .NET developer concentration across companies and industries.
-        3. **Company Profiles**: Comprehensive profiles including size, industry, location, and financial standing.
-        4. **Market Trends**: Insights into hiring patterns, technology adoption, and growth areas in .NET development.
-        """)
-        
-        st.markdown("### Business Impact")
-        st.markdown("""
-        - 🎯 Targeted market analysis for .NET-related products or services
-        - 🤝 Identification of potential clients or partners in the Belgian tech ecosystem
-        - 🏆 Understanding of the competitive landscape in .NET development
-        """)
-    
-    with col2:
-        st.markdown("### Methodology")
-        st.markdown("""
-        1. **Data Collection**: 
-            - LinkedIn profile searches for .NET developers
-            - Company data from LinkedIn Company Pages
-            - Employee profiles from identified companies
-            - Google My Business (GMB) profiles
-            - Company website content
-            - Financial data from reliable sources
+        <div style='background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin-bottom: 20px;'>
+            <h2>🔍 Project Overview</h2>
+        </div>
+        """, unsafe_allow_html=True)
 
-        2. **Data Processing**:
-            - Cleaning and categorization of collected data
-            - Identification of .NET skills
-            - Classification of employee seniority and departments
-            - Tenure calculation
+        col1, col2 = st.columns(2)
 
-        3. **Data Transformation**: 
-            - Aggregation and transformation using dbt (data build tool)
-            - Integration of data from multiple sources
-            - Implementation of business logic and calculations
-        
-        4. **Data Activation**:
-            - t.b.c.
-        """)
+        with col1:
+            st.markdown("""
+            ### Objective
+            Maps the Belgian .NET ecosystem, offering data-driven insights to guide strategic decisions.
+            The project uses LinkedIn to identify companies with .NET developers and aggregates data from various sources.
+            The data is analyzed to reveal .NET developer distribution, company profiles, hiring trends, and department structures.
+            """)
+            
+            st.markdown("""
+            ### Key Insights
+            
+            1. **Company Identification**: 1094 unique companies employing .NET developers identified in Flanders.
+            2. **Developer Distribution**: Analysis of .NET developer concentration across companies and industries.
+            3. **Company Profiles**: Comprehensive profiles including size, industry, location, and financial standing.
+            4. **Market Trends**: Insights into hiring patterns, technology adoption, and growth areas in .NET development.
+            """)
+            
+            st.markdown("""
+            ### Business Impact
+            
+            - 🎯 Targeted market analysis for .NET-related products or services
+            - 🤝 Identification of potential clients or partners in the Belgian tech ecosystem
+            - 🏆 Understanding of the competitive landscape in .NET development
+            """)
 
-    
+        with col2:
+            st.markdown("""
+            ### Methodology
+            
+            1. **Data Collection**: 
+                - LinkedIn profile searches for .NET developers
+                - Company data from LinkedIn Company Pages
+                - Employee profiles from identified companies
+                - Google My Business (GMB) profiles
+                - Company website content
+                - Financial data from reliable sources
 
-    with st.expander("Project Assumptions"):
+            2. **Data Processing**:
+                - Cleaning and categorization of collected data
+                - Identification of .NET skills
+                - Classification of employee seniority and departments
+                - Tenure calculation
+
+            3. **Data Transformation**: 
+                - Aggregation and transformation using dbt (data build tool)
+                - Integration of data from multiple sources
+                - Implementation of business logic and calculations
+            
+            4. **Data Activation**:
+                - t.b.c.
+            """)
+
         st.markdown("""
-        This project is based on the following assumptions:
-        1. LinkedIn is the most accurate & up-to-date source for company and employee data.
-        2. Every .NET developer mentioned this in their profile.
-        3. Every LinkedIn profile has an associated LinkedIn company identification.
-        """)
+            Project Assumptions
+            
+            This project is based on the following assumptions:
+            1. LinkedIn is the most accurate & up-to-date source for company and employee data.
+            2. Every .NET developer mentioned this in their profile.
+            3. Every LinkedIn profile has an associated LinkedIn company identification.
+            
+            """)
+
+    # Add this at the end of your script
+    st.markdown("""
+    <style>
+        .stMarkdown {
+            background-color: #f0f2f6;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 
     # Step 1: Search .NET Profiles
-    st.markdown("### 📊 Step 1: Search .NET Profiles")
+    st.subheader("📊 Step 1: Search .NET Profiles")
 
     with st.expander("View Documentation", expanded=False):
         st.info("""
         Starting with a LinkedIn search, profiles are collected using various keywords such as ".NET" or "dotNET." \n
         
         However, LinkedIn's search results are not always fully accurate when specific filters are applied. \n
-                
+        
         The profiles are screened for .NET-related skills and experience, identifying unique companies where employees with .NET skills are employed.\n
-
         To enable downstream analysis, it is crucial to gather information about these companies. However, not all profiles included employer details, which limited the ability to conduct a comprehensive analysis based on company information.""")
 
     # Connect to the database
@@ -177,7 +216,7 @@ def main():
         st.metric("Unique Companies", f"{distinct_companies:,}")
 
     # Step 2: Company List Creation
-    st.markdown("### 📊 Step 2: Company List Creation")
+    st.subheader("📊 Step 2: Company List Creation")
 
     with st.expander("View Documentation", expanded=False):
         st.info("""
@@ -191,7 +230,7 @@ def main():
         """)
 
     # Step 3: Company Data Collection
-    st.markdown("### 📊 Step 3: Company Data Collection")
+    st.subheader("📊 Step 3: Company Data Collection")
 
     with st.expander("View Documentation", expanded=False):
         st.info("""
@@ -338,7 +377,7 @@ def main():
     """)
 
     # Step 4: Employee Profile Scraping and Data Processing
-    st.markdown("### 📊 Step 4: Employee Profile Scraping, Data Processing & Labeling")
+    st.subheader("📊 Step 4: Employee Profile Scraping, Data Processing & Labeling")
 
     with st.expander("View Documentation", expanded=False):
         st.info("""
@@ -504,7 +543,7 @@ def main():
     """)
 
     # Step 5: Google My Business (GMB) Profile Scraping
-    st.markdown("### 📊 Step 5: Google My Business (GMB) Profile Scraping")
+    st.subheader("📊 Step 5: Google My Business (GMB) Profile Scraping")
 
     with st.expander("View Documentation", expanded=False):
         st.info("""
@@ -622,7 +661,7 @@ def main():
     """)
 
     # Step 6: Company Website Scraping
-    st.markdown("### 📊 Step 6: Company Website Scraping")
+    st.subheader("📊 Step 6: Company Website Scraping")
 
     with st.expander("View Documentation", expanded=False):
         st.info("""
@@ -761,7 +800,7 @@ def main():
     - Websites to embed: {websites_to_embed}%
 """)
     # Step 7: Financial Data Scraping
-    st.markdown("### 📊 Step 7: Financial Data Scraping")
+    st.subheader("📊 Step 7: Financial Data Scraping")
 
     with st.expander("View Documentation", expanded=False):
         st.info("""
@@ -876,7 +915,7 @@ def main():
 
 
     # Step 8: Data Aggregation and Transformation with dbt
-    st.markdown("### 📊 Step 8: Data Aggregation and Transformation with dbt")
+    st.subheader("📊 Step 8: Data Aggregation and Transformation with dbt")
 
     with st.expander("View Documentation", expanded=False):
         st.info("""
