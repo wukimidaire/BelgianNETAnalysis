@@ -354,36 +354,174 @@ def main():
     - Percentage complete: {percentage_complete}%
     """)
 
-    # Step 4: Employee Profile Scraping
-    st.markdown("### 📊 Step 4: Employee Profile Scraping")
+    # Step 4: Employee Profile Scraping and Data Processing
+    st.markdown("### 📊 Step 4: Employee Profile Scraping, Data Processing & Labeling")
 
     with st.expander("View Documentation", expanded=False):
         st.markdown("""
-        In this step, we expanded our data collection to include profiles of all employees from the companies identified in Step 2. This process involved:
+        In this step, we expanded our data collection to include profiles of all employees from the companies identified in Step 2, followed by comprehensive data processing. This process involved:
 
-        1. Systematically scraping public LinkedIn profiles of employees from each company.
-        2. Collecting data on job titles, skills, experience, and other relevant information.
-        3. Ensuring data privacy compliance by only collecting publicly available information.
+        ### 1. Data Collection
 
-        This comprehensive employee data provides a deeper understanding of the workforce composition in companies employing .NET developers.
+        - Systematically scraped public LinkedIn profiles of employees from each company
+        - Gathered key data points: job titles, skills, experience, and other relevant information
+        - Ensured data privacy compliance by only collecting publicly available information
+
+        #### Involved Challenges:
+
+        - Varying data availability on LinkedIn profiles
+        - LinkedIn API restrictions limiting access to bulk data
+        - Need for IP rotation using proxy servers to avoid detection and blocking
+        - Careful management of request frequency to avoid temporary bans
+        - Development of CAPTCHA handling strategies
+        - Ensuring compliance with LinkedIn's terms of service and data protection regulations
+        - Dealing with variations in profile structures and incomplete information
+
+        ### 2. Data Cleaning and Categorization
+        
+        #### a. .NET Skills Identification:
+        - Analyzed profile content to identify employees with .NET-related skills or experience
+        - Utilized keyword matching and natural language processing techniques to detect .NET expertise
+        - Considered factors such as listed skills, job titles, and project descriptions
+
+        #### b. Seniority Classification:
+        - **Advisor**: Board members, shareholders, chairmen, investors
+        - **Executive**: C-level positions, founders, partners, business owners
+        - **Senior**: Team leads, heads of departments, senior positions, directors
+        - **Specialist**: Default category for roles not matching above criteria    
+
+        #### c. Tenure Calculation:
+        - Converted text-based duration into numeric values (total months within company)
+
+        #### d. Department Classification:
+        - Marketing
+        - Sales
+        - Customer Success
+        - Finance
+        - Human Resources
+        - Legal
+        - IT/Engineering
+        - Operations (default if multiple/no clear department)
+
+        This comprehensive approach provides a deeper understanding of workforce composition in companies employing .NET developers. 
+        It enables more accurate analysis of seniority levels, tenure, and departmental distribution, offering valuable insights into the structure and expertise within these organizations.
         """)
+        
+    # Execute the query
+    cur.execute("""
+    WITH subquery1 AS (
+        SELECT 
+            companyid, 
+            min(vmid) as vmid, 
+            min(employee_scrape_timestamp) as min_timestamp
+        FROM
+            kenze_profile_search
+        WHERE
+            companyid IS NOT NULL 
+            AND companyid != ''
+            AND employee_scrape_timestamp IS NULL 
+            AND net_profile = TRUE
+        GROUP BY companyid
+    ),
+    subquery2 AS (
+        SELECT 
+            companyid, 
+            COUNT(companyid) AS kenze_pli_employee_count
+        FROM
+            kenze_pli_profiles
+        WHERE
+            companyid IS NOT NULL
+        GROUP BY companyid
+    ),
+    cli_search AS (
+        SELECT
+            company_id AS companyid_c,
+            hq_country,
+            employee_count,
+            enrichment_timestamp
+        FROM
+            cli
+        WHERE
+            hq_country = 'BE'
+    )
+    SELECT 
+        COUNT(DISTINCT subquery1.companyid) AS companies_found, 
+        COUNT(DISTINCT CASE WHEN  subquery2.companyid IS NOT NULL THEN cli_search.companyid_c END) AS collected,
+        COUNT(DISTINCT CASE WHEN  subquery2.companyid IS NULL THEN cli_search.companyid_c END) AS to_collect,
+        SUM(subquery2.kenze_pli_employee_count) AS profiles_collected
+    FROM
+        subquery1
+        LEFT JOIN subquery2 ON subquery1.companyid = subquery2.companyid
+        FULL JOIN cli_search ON subquery1.companyid = cli_search.companyid_c::VARCHAR
+    WHERE
+        subquery1.companyid IS NOT NULL 
+        AND subquery1.companyid != ''
+    """)
 
-    # Step 5: Employee Labeling
-    st.markdown("### 📊 Step 5: Employee Labeling")
+    result = cur.fetchone()
+    companies_found, collected, to_collect, profiles_collected = result
 
-    with st.expander("View Documentation", expanded=False):
-        st.markdown("""
-        After collecting employee profiles, we labeled them based on specific criteria:
+    # Convert profiles_collected to float
+    profiles_collected = float(profiles_collected)
 
-        1. '.NET' skills: Identifying employees with .NET-related skills or experience.
-        2. Department: Categorizing employees into departments (e.g., IT, Engineering, Marketing).
-        3. Seniority: Classifying employees by seniority level (e.g., Junior, Senior, Lead).
+    # Create two columns for the graphs
+    col1, col2 = st.columns(2)
 
-        This labeling process allows for more granular analysis of the workforce, particularly focusing on the distribution and roles of .NET developers within these companies.
-        """)
+    with col1:
+        st.subheader("Company Data")
+        
+        # Create a pie chart for company data
+        fig1 = go.Figure(data=[go.Pie(
+            labels=['Collected', 'To Collect'],
+            values=[collected, to_collect],
+            hole=.3,
+            marker_colors=['#66b3ff', '#ff9999']
+        )])
+        
+        fig1.update_layout(
+            title="Employee Collection Status",
+            annotations=[dict(text=f'Total: {companies_found}', x=0.5, y=0.5, font_size=20, showarrow=False)]
+        )
+        
+        st.plotly_chart(fig1, use_container_width=True)
 
-    # Step 6: Google My Business (GMB) Profile Scraping
-    st.markdown("### 📊 Step 6: Google My Business (GMB) Profile Scraping")
+    with col2:
+        st.subheader("Profile Data")
+        
+        # Create a gauge chart for profile collection progress
+        fig2 = go.Figure(go.Indicator(
+            mode = "gauge+number",
+            value = profiles_collected,
+            domain = {'x': [0, 1], 'y': [0, 1]},
+            title = {'text': "Profiles Collected", 'font': {'size': 24}},
+            gauge = {
+                'axis': {'range': [None, profiles_collected * 1.5], 'tickwidth': 1, 'tickcolor': "darkblue"},
+                'bar': {'color': "darkblue"},
+                'bgcolor': "white",
+                'borderwidth': 2,
+                'bordercolor': "gray",
+                'steps': [
+                    {'range': [0, profiles_collected], 'color': 'cyan'},
+                    {'range': [profiles_collected, profiles_collected * 1.5], 'color': 'royalblue'}],
+                'threshold': {
+                    'line': {'color': "red", 'width': 4},
+                    'thickness': 0.75,
+                    'value': profiles_collected}}))
+
+        fig2.update_layout(font = {'color': "darkblue", 'family': "Arial"})
+        
+        st.plotly_chart(fig2, use_container_width=True)
+
+    # Display additional information
+    st.info(f"""
+    - Total companies found: {companies_found}
+    - Companies with employees collected: {collected}
+    - Companies remaining to collect employees: {to_collect}
+    - Total profiles collected: {profiles_collected}
+    """)
+
+    # Step 5: Google My Business (GMB) Profile Scraping
+    st.markdown("### 📊 Step 5: Google My Business (GMB) Profile Scraping")
 
     with st.expander("View Documentation", expanded=False):
         st.markdown("""
@@ -401,8 +539,8 @@ def main():
         This step provides valuable context about the public presence and customer perception of these companies.
         """)
 
-    # Step 7: Company Website Scraping
-    st.markdown("### 📊 Step 7: Company Website Scraping")
+    # Step 6: Company Website Scraping
+    st.markdown("### 📊 Step 6: Company Website Scraping")
 
     with st.expander("View Documentation", expanded=False):
         st.markdown("""
@@ -419,8 +557,8 @@ def main():
         This step provides insights into the companies' current needs and growth trajectories, especially in relation to .NET development.
         """)
 
-    # Step 8: Financial Data Scraping
-    st.markdown("### 📊 Step 8: Financial Data Scraping")
+    # Step 7: Financial Data Scraping
+    st.markdown("### 📊 Step 7: Financial Data Scraping")
 
     with st.expander("View Documentation", expanded=False):
         st.markdown("""
