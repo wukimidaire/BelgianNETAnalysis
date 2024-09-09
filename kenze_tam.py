@@ -20,105 +20,86 @@ def connect_to_db():
     )
     return conn
 
-# Custom CSS to improve layout
-st.markdown("""
-<style>
-    .reportview-container .main .block-container {
-        max-width: 1000px;
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-    }
-    .stAlert {
-        background-color: #f0f2f6;
-        border: 1px solid #ddd;
-        padding: 20px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-    }
-    .st-emotion-cache-1v0mbdj {
-        width: 100%;
-    }
-</style>
-""", unsafe_allow_html=True)
+
 
 # Streamlit app
 def main():
-    st.title("Belgian Organizations Employing in .NET")
+    st.set_page_config(layout="wide", page_title="Belgian .NET Organizations Analysis")
 
-    # Connect to the database and fetch data
-    conn = connect_to_db()
-    cur = conn.cursor()
-
-    # Fetch data from the table, including the new columns
-    cur.execute("SELECT * FROM public_dbt.a_final_kenze_companies")
-    data = cur.fetchall()
-
-    # Convert data to a pandas DataFrame
-    df = pd.DataFrame(data, columns=[desc[0] for desc in cur.description])
-
-    # Remove the "Complete Dataset" section and associated table
-
-    # Modify the filtering section
-    st.sidebar.title("Filters")
-    if 'industry' in df.columns:
-        selected_industries = st.sidebar.multiselect("Select Industries", df['industry'].unique())
-    else:
-        selected_industries = []
-        st.sidebar.warning("Industry data not available")
-
-    if 'employee_count' in df.columns:
-        min_employees = st.sidebar.number_input("Minimum Employees", min_value=0, value=0, key="sidebar_min_employees")
-        max_employees = st.sidebar.number_input("Maximum Employees", min_value=0, value=int(df['employee_count'].max()), key="sidebar_max_employees")
-    else:
-        min_employees, max_employees = 0, float('inf')
-        st.sidebar.warning("Employee count data not available")
-
-    # Filter the dataframe
-    filtered_df = df[
-        (df['industry'].isin(selected_industries) if selected_industries and 'industry' in df.columns else True) &
-        (df['employee_count'] >= min_employees if 'employee_count' in df.columns else True) &
-        (df['employee_count'] <= max_employees if 'employee_count' in df.columns else True)
-    ]
+    st.title("Belgian Organizations Employing .NET Developers")
 
     # Project Overview
-    st.markdown("### 🔍 Project Overview")
-    st.info("""
-    This project is based on the following assumptions:
-    1. LinkedIn is the most accurate & up-to-date source for company and employee data.
-    2. Every .NET developer mentioned this in their profile.
-    3. Every LinkedIn profile has an associated LinkedIn company identification.
+    st.markdown("## 🔍 Project Overview")
     
-    The goal is to identify and analyze organizations in Flanders that employ .NET software engineers,
-    providing valuable insights for targeting and market analysis.
+    col1, col2 = st.columns(2)
     
-    Approach:
+    with col1:
+        st.markdown("### Objective")
+        st.markdown("""
+        Maps the Belgian .NET ecosystem, offering data-driven insights to guide strategic decisions.
+        The project uses LinkedIn to identify companies with .NET developers and aggregates data from various sources.
+        The data is analyzed to reveal .NET developer distribution, company profiles, hiring trends, and department structures.
+        """)
+        
+        st.markdown("### Key Insights")
+        st.markdown("""
+        1. **Company Identification**: 1094 unique companies employing .NET developers identified in Flanders.
+        2. **Developer Distribution**: Analysis of .NET developer concentration across companies and industries.
+        3. **Company Profiles**: Comprehensive profiles including size, industry, location, and financial standing.
+        4. **Market Trends**: Insights into hiring patterns, technology adoption, and growth areas in .NET development.
+        """)
+        
+        st.markdown("### Business Impact")
+        st.markdown("""
+        - 🎯 Targeted market analysis for .NET-related products or services
+        - 🤝 Identification of potential clients or partners in the Belgian tech ecosystem
+        - 🏆 Understanding of the competitive landscape in .NET development
+        """)
     
-    Step 1. Scrape LinkedIn profiles of .NET developers in Flanders
+    with col2:
+        st.markdown("### Methodology")
+        st.markdown("""
+        1. **Data Collection**: 
+            - LinkedIn profile searches for .NET developers
+            - Company data from LinkedIn Company Pages
+            - Employee profiles from identified companies
+            - Google My Business (GMB) profiles
+            - Company website content
+            - Financial data from reliable sources
+
+        2. **Data Processing**:
+            - Cleaning and categorization of collected data
+            - Identification of .NET skills
+            - Classification of employee seniority and departments
+            - Tenure calculation
+
+        3. **Data Transformation**: 
+            - Aggregation and transformation using dbt (data build tool)
+            - Integration of data from multiple sources
+            - Implementation of business logic and calculations
+        
+        4. **Data Activation**:
+            - t.b.c.
+        """)
+
     
-    Step 2. Use the data to create a list of companies that employ .NET developers
-    
-    Step 3. Collect company data from LinkedIn Company Pages
-    
-    Step 4. Scrape all LinkedIn profiles of employees of these companies
-    
-    Step 5. Label employees on '.NET' skills, 'Department' and 'Seniority'
-    
-    Step 6. Scrape all Google My Business (GMB) profiles of these companies
-    
-    Step 7. Scrape all company websites with focus on job pages
-    
-    Step 8. Scrape financial data
-    
-    """)
+
+    with st.expander("Project Assumptions"):
+        st.markdown("""
+        This project is based on the following assumptions:
+        1. LinkedIn is the most accurate & up-to-date source for company and employee data.
+        2. Every .NET developer mentioned this in their profile.
+        3. Every LinkedIn profile has an associated LinkedIn company identification.
+        """)
 
     # Step 1: Search .NET Profiles
     st.markdown("### 📊 Step 1: Search .NET Profiles")
 
     with st.expander("View Documentation", expanded=False):
-        st.markdown("""
-        Starting with a LinkedIn search, profiles were collected using various keywords such as ".NET" or "dotNET." 
+        st.info("""
+        Starting with a LinkedIn search, profiles are collected using various keywords such as ".NET" or "dotNET." 
         However, LinkedIn's search results are not always fully accurate when specific filters are applied. 
-        The profiles were then screened for .NET-related skills and experience, identifying unique companies where employees with .NET skills are employed.
+        The profiles are screened for .NET-related skills and experience, identifying unique companies where employees with .NET skills are employed.
 
         To enable downstream analysis, it is crucial to gather information about these companies. However, not all profiles included employer details, which limited the ability to conduct a comprehensive analysis based on company information.""")
 
@@ -197,8 +178,8 @@ def main():
     st.markdown("### 📊 Step 2: Company List Creation")
 
     with st.expander("View Documentation", expanded=False):
-        st.markdown("""
-        After identifying .NET developers from LinkedIn profiles, we compiled a list of unique companies that employ these developers. This step involved:
+        st.info("""
+        After identifying .NET developers from LinkedIn profiles, a list of unique companies that employ developers is compiled. This step involves:
 
         1. Extracting LinkedIn company identificition (company_id's) from the .NET developers' profiles.
         2. Removing duplicates to create a list of unique companies.
@@ -211,8 +192,8 @@ def main():
     st.markdown("### 📊 Step 3: Company Data Collection")
 
     with st.expander("View Documentation", expanded=False):
-        st.markdown("""
-        Using the list of companies identified in Step 2, we collected comprehensive data from LinkedIn Company Pages. This process involved:
+        st.info("""
+        Using a list of companies identified in Step 2, comprehensive data from LinkedIn Company Pages is collected. This process involves:
 
         1. Scraping public information from each company's LinkedIn page.
         2. Gathering key data points such as:
@@ -358,8 +339,8 @@ def main():
     st.markdown("### 📊 Step 4: Employee Profile Scraping, Data Processing & Labeling")
 
     with st.expander("View Documentation", expanded=False):
-        st.markdown("""
-        In this step, we expanded our data collection to include profiles of all employees from the companies identified in Step 2, followed by comprehensive data processing. This process involved:
+        st.info("""
+        In this step, the data collection process is expanded to include profiles of all employees from the companies identified in Step 2, followed by comprehensive data processing. This process involves:
 
         ### 1. Data Collection
 
@@ -425,7 +406,7 @@ def main():
     ),
     subquery2 AS (
         SELECT 
-            companyid, 
+            companyid,
             COUNT(companyid) AS kenze_pli_employee_count
         FROM
             kenze_pli_profiles
@@ -477,7 +458,7 @@ def main():
             hole=.3,
             marker_colors=['#66b3ff', '#ff9999']
         )])
-        
+
         fig1.update_layout(
             title="Employee Collection Status",
             annotations=[dict(text=f'Total: {companies_found}', x=0.5, y=0.5, font_size=20, showarrow=False)]
@@ -524,8 +505,8 @@ def main():
     st.markdown("### 📊 Step 5: Google My Business (GMB) Profile Scraping")
 
     with st.expander("View Documentation", expanded=False):
-        st.markdown("""
-        To enhance the accuracy and completeness of our company data, we collect Google My Business (GMB) profiles. 
+        st.info("""
+        To enhance the accuracy and completeness of company data, this step involves collecting Google My Business (GMB) profiles.  
         This step is crucial for obtaining additional financial data and gaining a more comprehensive view of each company's size, industry, and location.
 
         Key aspects of this process include:
@@ -642,7 +623,7 @@ def main():
     st.markdown("### 📊 Step 6: Company Website Scraping")
 
     with st.expander("View Documentation", expanded=False):
-        st.markdown("""
+        st.info("""
         This step provides insights into the companies' current needs and growth trajectories, especially in relation to .NET development.
         Company website scraping, with a particular focus on job pages, is a crucial step in gathering highly valuable information:
 
@@ -676,6 +657,25 @@ def main():
         - CAPTCHA handling
         - Dealing with incomplete or inconsistent data
         - Differences in website layouts and structures
+        
+        
+        
+        This JSON structure represents comprehensive data about a website, including business information, job openings, and customer profiles.
+
+        #### Main Components:
+
+        1. **Basic Website Info**: URL, title, description, and keywords.
+        2. **Business Details**: Type (B2B, B2C, B2G) and hiring status.
+        3. **Career Information**: Job openings and career page URLs.
+        4. **Contact Information**: Email and phone number.
+        5. **Case Studies**: Customer success stories with challenges and solutions.
+        6. **Ideal Customer Profile**: Description and characteristics of target customers.
+        7. **Open Positions**: Detailed job listings with requirements and tools.
+        8. **About Section**: Company mission overview.
+        9. **Pricing and Trial Info**: Availability of pricing details and trial offers.
+        10. **Meta Tags**: Additional metadata like author information.
+        11. **Content Summary**: Main headings and their corresponding URLs.
+        12. **Social Media**: Links to various social media profiles.
 
         
         Note: 
@@ -758,15 +758,14 @@ def main():
     - Websites embedded: {round(websites_embedded, 2)}%
     - Websites to embed: {websites_to_embed}%
 """)
-
     # Step 7: Financial Data Scraping
     st.markdown("### 📊 Step 7: Financial Data Scraping")
 
     with st.expander("View Documentation", expanded=False):
-        st.markdown("""
-        The final step involved collecting financial data to assess the economic standing of these companies:
+        st.info("""
+        This step involves collecting unstructured financial data into structured data to assess the economic standing of these companies:
 
-        1. Identifying reliable sources of financial data for Belgian companies.
+        1. Identifying reliable sources of financial data for Belgian companies such as the Belgian Business Register.
         2. Scraping key financial metrics such as:
            - Annual revenue
            - Profit margins
@@ -777,14 +776,204 @@ def main():
         This financial information provides context on the economic health and scale of companies employing .NET developers in Flanders, allowing for more comprehensive market analysis.
         """)
 
+    # Execute the query for Step 7
+    cur.execute("""
+    WITH kenze_profile_search AS (
+        SELECT DISTINCT
+            companyid
+        FROM
+            kenze_profile_search
+        WHERE
+            companyid IS NOT NULL
+            AND companyid != ''
+            AND net_profile = TRUE
+    ),
+    cli_search AS (
+        SELECT
+            company_id,
+            enrichment_timestamp, 
+            serper_addressscrape_timestamp, 
+            vat_scrape_timestamp,
+            website, 
+            hq_line1, 
+            hq_postalcode, 
+            company_name, 
+            embed_website_timestamp
+        FROM
+            cli
+    ),
+    financial_search AS ( 
+        SELECT 
+            company_id, 
+            year, 
+            ROUND(equity, 0) AS equity, 
+            employees AS fte_employees, 
+            ROUND(profit_loss, 0) AS profit_loss, 
+            ROUND(gross_margin, 0) AS gross_margin,
+            update_timestamp
+        FROM (
+            SELECT 
+                company_id, 
+                year, 
+                equity, 
+                employees, 
+                profit_loss, 
+                gross_margin,
+                update_timestamp,
+                ROW_NUMBER() OVER (PARTITION BY company_id ORDER BY year DESC) AS rn
+            FROM 
+                financial_data
+        ) AS subquery
+        WHERE rn = 1
+    )
+
+    SELECT
+        count(a.companyid) AS total_companies,
+        ROUND(COUNT(CASE WHEN b.vat_scrape_timestamp IS NOT NULL THEN 1 END) * 100.0 / count(a.companyid), 2) AS pct_financial_data_enrichment
+    FROM
+        kenze_profile_search AS a
+    FULL JOIN cli_search AS b
+        ON a.companyid = b.company_id::VARCHAR
+    LEFT JOIN financial_search AS d
+        ON a.companyid = d.company_id::VARCHAR
+    WHERE
+        a.companyid IS NOT NULL;
+    """)
+
+    result = cur.fetchone()
+    total_companies, pct_financial_data_enrichment = result
+
+    # Calculate the percentage of companies without financial data
+    pct_no_financial_data = 100 - pct_financial_data_enrichment
+
+    # Create a pie chart
+    fig = go.Figure(data=[go.Pie(
+        labels=['Financial Data Available', 'No Financial Data Available'],
+        values=[pct_financial_data_enrichment, pct_no_financial_data],
+        hole=.3,
+        marker_colors=['#66b3ff', '#ff9999']
+    )])
+
+    fig.update_layout(
+        title="Financial Data Enrichment Progress",
+        annotations=[dict(text=f'Total: {total_companies}', x=0.5, y=0.5, font_size=20, showarrow=False)]
+    )
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Display additional information
+    st.info(f"""
+    - Total companies: {total_companies}
+    - Companies with financial data: {round(pct_financial_data_enrichment, 2)}%
+    - Companies without financial data: {round(pct_no_financial_data, 2)}%
+    """)
+
+
+
+
+
+    # Step 8: Data Aggregation and Transformation with dbt
+    st.markdown("### 📊 Step 8: Data Aggregation and Transformation with dbt")
+
+    with st.expander("View Documentation", expanded=False):
+        st.info("""
+        In this crucial final step, using dbt (data build tool) to aggregate and transform data from multiple sources into a unified, analysis-ready dataset. This process is essential for several reasons:
+
+        1. **Data Integration**: 
+           - Combines information from various sources (LinkedIn profiles, company data, GMB profiles, financial data, etc.)
+           - Creates a single source of truth for all company-related information
+
+        2. **Data Quality and Consistency**:
+           - Applies consistent transform           - Ensures data integrity and reduces inconsistencies
+
+        3. **Scalability and Maintainability**:
+           - dbt's modular approach allows for easy updates and additions to the data pipeline
+           - Version control integration enables tracking changes and collaborating on data transformations
+
+        4. **Performance Optimization**:
+           - Pre-aggregates data to improve query performance for end-user analytics
+           - Enables efficient data access for the Streamlit dashboard
+
+        5. **Business Logic Implementation**:
+           - Centralizes complex calculations and derivations (e.g., .NET developer ratios, company size categories)
+           - Ensures consistent application of business rules across all analyses
+
+        ### Why dbt for Data Transformation?
+
+        Selecting dbt is compelling for several reasons:
+
+        1. **SQL-Based Transformations**: 
+           - Leverages SQL, a widely known language, making it accessible to data analysts and engineers
+           - Allows for complex transformations without the need for a separate programming environment
+
+        2. **Modular and Reusable Code**:
+           - Encourages creation of modular, reusable SQL models
+           - Simplifies maintenance and promotes code reuse across projects
+
+        3. **Version Control and Collaboration**:
+           - Integrates seamlessly with Git for version control
+           - Facilitates collaboration among team members on data transformations
+
+        4. **Testing and Documentation**:
+           - Built-in testing framework ensures data quality and integrity
+           - Automated documentation generation keeps data dictionaries up-to-date
+
+        5. **Scheduling and Orchestration**:
+           - Easy integration with scheduling tools for automated runs
+           - Supports complex DAGs (Directed Acyclic Graphs) for managing dependencies between models
+
+        ### How Everything Comes Together
+
+        1. **Data Ingestion**: 
+           - Raw data from various sources is loaded into our data warehouse
+
+        2. **Staging Models**:
+           - dbt creates staging models that clean and standardize raw data from each source
+
+        3. **Intermediate Models**:
+           - More complex transformations are applied, joining data from different sources
+
+        4. **Final Models**:
+           - Aggregated views are created, incorporating all necessary business logic
+
+        5. **Testing and Documentation**:
+           - dbt runs tests to ensure data quality and generates documentation
+
+        6. **Deployment**:
+           - Transformed data is made available for the Streamlit dashboard and other analytics tools
+
+        This approach ensures that our final dataset is comprehensive, consistent, and optimized for analysis, 
+        providing a solid foundation for insights into the .NET development landscape in Belgium.
+        """)
+
+    # You can add a visual representation of the dbt process here if desired
+    st.image("https://raw.githubusercontent.com/dbt-labs/dbt-core/main/etc/dbt-logo-full.svg", caption="dbt Logo", width=300)
+   
+
+
+    # Connect to the database and fetch data
+    conn = connect_to_db()
+    cur = conn.cursor()
+
+    # Fetch data from the table, including the new columns
+    cur.execute("SELECT * FROM public_dbt.a_final_kenze_companies")
+    data = cur.fetchall()
+
+    # Convert data to a pandas DataFrame
+    df = pd.DataFrame(data, columns=[desc[0] for desc in cur.description])
+
+    # Remove the sidebar filtering section
+    # Instead, we'll use the map filters for all filtering
+
     # Create a geo map
-    if 'latitude' in filtered_df.columns and 'longitude' in filtered_df.columns:
+    if 'latitude' in df.columns and 'longitude' in df.columns:
         # Convert latitude and longitude to float if they're not already
-        filtered_df['latitude'] = pd.to_numeric(filtered_df['latitude'], errors='coerce')
-        filtered_df['longitude'] = pd.to_numeric(filtered_df['longitude'], errors='coerce')
+        df['latitude'] = pd.to_numeric(df['latitude'], errors='coerce')
+        df['longitude'] = pd.to_numeric(df['longitude'], errors='coerce')
 
         # Remove rows with null values in latitude or longitude
-        df_map = filtered_df.dropna(subset=['latitude', 'longitude'])
+        df_map = df.dropna(subset=['latitude', 'longitude'])
 
         # Filter for Belgium (approximate bounding box)
         belgium_lat_min, belgium_lat_max = 49.5, 51.5
@@ -870,55 +1059,8 @@ def main():
     else:
         st.warning("Latitude and longitude columns not found in the data.")
 
-    # Industry Distribution
-    st.subheader("Industry Distribution")
-    industry_counts = filtered_df['industry'].value_counts()
-    fig = go.Figure(data=[go.Pie(labels=industry_counts.index, values=industry_counts.values)])
-    fig.update_layout(title="Distribution of Companies by Industry")
-    st.plotly_chart(fig)
-
-    # Company Size Distribution
-    st.subheader("Company Size Distribution")
-    size_bins = [0, 10, 50, 250, 1000, float('inf')]
-    size_labels = ['1-10', '11-50', '51-250', '251-1000', '1000+']
-    filtered_df['size_category'] = pd.cut(filtered_df['employee_count'], bins=size_bins, labels=size_labels, right=False)
-    size_dist = filtered_df['size_category'].value_counts().sort_index()
-
-    fig = go.Figure(data=[go.Bar(x=size_dist.index, y=size_dist.values)])
-    fig.update_layout(title="Distribution of Companies by Size", xaxis_title="Company Size", yaxis_title="Number of Companies")
-    st.plotly_chart(fig)
-
-    # .NET Developer Concentration
-    st.subheader(".NET Developer Concentration")
-    if 'net_dev_count' in filtered_df.columns and 'employee_count' in filtered_df.columns:
-        filtered_df['net_dev_count'] = pd.to_numeric(filtered_df['net_dev_count'], errors='coerce')
-        filtered_df['employee_count'] = pd.to_numeric(filtered_df['employee_count'], errors='coerce')
-        filtered_df['net_dev_percentage'] = (filtered_df['net_dev_count'] / filtered_df['employee_count']) * 100
-        fig = go.Figure(data=[go.Histogram(x=filtered_df['net_dev_percentage'])])
-        fig.update_layout(title=".NET Developer Concentration", xaxis_title="Percentage of .NET Developers", yaxis_title="Number of Companies")
-        st.plotly_chart(fig)
-    else:
-        st.warning(".NET developer concentration data not available")
-
-    # Top Companies Table
-    st.subheader("Top Companies")
-    if 'company_name' in filtered_df.columns:
-        columns_to_display = ['company_name']
-        if 'industry' in filtered_df.columns:
-            columns_to_display.append('industry')
-        if 'employee_count' in filtered_df.columns:
-            columns_to_display.append('employee_count')
-        if 'net_dev_count' in filtered_df.columns:
-            columns_to_display.append('net_dev_count')
-        if 'net_profile' in filtered_df.columns:
-            columns_to_display.append('net_profile')
-        if 'net_profile_vs_total_ratio' in filtered_df.columns:
-            columns_to_display.append('net_profile_vs_total_ratio')
-        
-        top_companies = filtered_df.sort_values('net_dev_count', ascending=False).head(10)
-        st.table(top_companies[columns_to_display])
-    else:
-        st.warning("Company data not available")
+   
 
 if __name__ == "__main__":
     main()
+
