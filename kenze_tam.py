@@ -97,9 +97,11 @@ def main():
 
     with st.expander("View Documentation", expanded=False):
         st.info("""
-        Starting with a LinkedIn search, profiles are collected using various keywords such as ".NET" or "dotNET." 
-        However, LinkedIn's search results are not always fully accurate when specific filters are applied. 
-        The profiles are screened for .NET-related skills and experience, identifying unique companies where employees with .NET skills are employed.
+        Starting with a LinkedIn search, profiles are collected using various keywords such as ".NET" or "dotNET." \n
+        
+        However, LinkedIn's search results are not always fully accurate when specific filters are applied. \n
+                
+        The profiles are screened for .NET-related skills and experience, identifying unique companies where employees with .NET skills are employed.\n
 
         To enable downstream analysis, it is crucial to gather information about these companies. However, not all profiles included employer details, which limited the ability to conduct a comprehensive analysis based on company information.""")
 
