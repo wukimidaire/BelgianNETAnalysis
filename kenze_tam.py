@@ -643,18 +643,121 @@ def main():
 
     with st.expander("View Documentation", expanded=False):
         st.markdown("""
-        We then turned our attention to the companies' own websites, with a particular focus on their job pages:
-
-        1. Developing web scrapers tailored to each company's website structure.
-        2. Extracting information such as:
-           - Current job openings, especially for .NET positions
-           - Company culture and values
-           - Products or services offered
-           - Recent news or blog posts
-        3. Analyzing the collected data to identify trends in hiring practices and technology preferences.
-
         This step provides insights into the companies' current needs and growth trajectories, especially in relation to .NET development.
+        Company website scraping, with a particular focus on job pages, is a crucial step in gathering highly valuable information:
+
+        1. Website content provides essential insights into:
+           - Company business type and industry focus
+           - Products or services offered
+           - Company culture and values
+           - Recent news or developments
+
+        2. Job postings, especially for .NET positions, offer critical data on:
+           - Current hiring needs and growth areas
+           - Technical stack and programming languages used
+           - Cloud environments and infrastructure preferences
+           - Security compliance requirements
+           - Other relevant technologies and tools
+
+        3. This information is vital for:
+           - Accurately identifying business types and market positioning
+           - Understanding companies' technical setups and preferences
+           - Analyzing trends in hiring practices and technology adoption
+           - Assessing companies' growth trajectories and focus areas
+
+        The process involves:
+        1. Developing tailored web scrapers for different website structures
+        2. Extracting and analyzing relevant information
+        3. Identifying patterns and insights across multiple companies
+
+        Challenges in this process include:
+        - Varying website structures and data availability
+        - Rate limiting and IP rotation requirements
+        - CAPTCHA handling
+        - Dealing with incomplete or inconsistent data
+        - Differences in website layouts and structures
+
+        
+        Note: 
+        Initially, HTML text is extracted. 
+        After setup, the software stack used to manage the website can be identified and analyzed by checking for specific software vendor website snippets. 
+        This analysis can reveal additional insights into the company's technical preferences and infrastructure. 
         """)
+
+    # Execute the query for Step 6
+    cur.execute("""
+    WITH kenze_profile_search AS (
+        SELECT DISTINCT
+            companyid
+        FROM
+            kenze_profile_search
+        WHERE
+            companyid IS NOT NULL
+            AND companyid != ''
+            AND net_profile = TRUE
+    ),
+    cli_search AS (
+        SELECT
+            company_id,
+            enrichment_timestamp, 
+            serper_addressscrape_timestamp, 
+            website, 
+            hq_line1, 
+            hq_postalcode, 
+            company_name,
+            embed_website_timestamp
+        FROM
+            cli
+        where website is not null and website != ''
+    ),
+    joined_data AS (
+        SELECT
+            a.companyid,
+            b.company_id,
+            b.embed_website_timestamp,b.website
+        FROM
+            kenze_profile_search AS a
+            LEFT JOIN cli_search AS b ON a.companyid = b.company_id::VARCHAR
+            
+        WHERE
+            a.companyid IS NOT NULL
+            AND b.company_id IS NOT NULL
+    )
+    SELECT 
+        COUNT(*) AS total_companies,
+        ROUND((COUNT(CASE WHEN embed_website_timestamp IS NULL THEN 1 END) * 100.0) / COUNT(*), 2 ) AS websites_to_embed 
+    FROM
+        joined_data
+    """)
+
+    result = cur.fetchone()
+    total_companies, websites_to_embed = result
+
+    # Calculate the percentage of websites embedded
+    websites_embedded = 100 - websites_to_embed
+
+    # Create a pie chart
+    fig = go.Figure(data=[go.Pie(
+        labels=['Websites Embedded', 'Websites to Embed'],
+        values=[websites_embedded, websites_to_embed],
+        hole=.3,
+        marker_colors=['#66b3ff', '#ff9999']
+    )])
+
+    fig.update_layout(
+        title="Company Website Embedding Progress",
+        annotations=[dict(text=f'Total: {total_companies}', x=0.5, y=0.5, font_size=20, showarrow=False)]
+    )
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Display additional information
+    st.info(f"""
+    - Total companies: {total_companies}
+    - Websites embedded: {round(websites_embedded, 2)}%
+    - Websites to embed: {websites_to_embed}%
+""")
 
     # Step 7: Financial Data Scraping
     st.markdown("### 📊 Step 7: Financial Data Scraping")
