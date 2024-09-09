@@ -200,11 +200,12 @@ def main():
         st.markdown("""
         After identifying .NET developers from LinkedIn profiles, we compiled a list of unique companies that employ these developers. This step involved:
 
-        1. Extracting company information from the .NET developers' profiles.
+        1. Extracting LinkedIn company identificition (company_id's) from the .NET developers' profiles.
         2. Removing duplicates to create a list of unique companies.
         3. Validating the company information to ensure accuracy.
+        4. Enriching company_id's with LinkedIn Company Pages data for filter purposes
 
-        This list serves as the foundation for our further analysis, providing a targeted set of companies known to employ .NET developers in Flanders.
+        This list serves as the foundation for our further analysis, providing a targeted set of companies known to employ .NET developers in Belgium.
         """)
 
     # Step 3: Company Data Collection
