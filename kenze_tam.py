@@ -38,7 +38,7 @@ def main():
     st.markdown("""
     <style>
         .stContainer {
-            background-color: #f0f2f6;
+            background-color: #f21f46f67;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
@@ -50,7 +50,7 @@ def main():
     with st.container():
         # Project Overview
         st.markdown("""
-        <div style='background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin-bottom: 20px;'>
+        <div style='background-color: #f21f46f67; padding: 20px; border-radius: 10px; margin-bottom: 20px;'>
             <h2>🔍 Project Overview</h2>
         </div>
         """, unsafe_allow_html=True)
@@ -123,7 +123,7 @@ def main():
     st.markdown("""
     <style>
         .stMarkdown {
-            background-color: #f0f2f6;
+            background-color: #f21f46f67;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
