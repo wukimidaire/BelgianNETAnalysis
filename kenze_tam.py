@@ -200,11 +200,11 @@ def main():
         st.markdown("""
         After identifying .NET developers from LinkedIn profiles, we compiled a list of unique companies that employ these developers. This step involved:
 
-        1. Extracting company information from the .NET developers' profiles.
+        1. Extracting LinkedIn company identificition (company_id's) from the .NET developers' profiles.
         2. Removing duplicates to create a list of unique companies.
         3. Validating the company information to ensure accuracy.
 
-        This list serves as the foundation for our further analysis, providing a targeted set of companies known to employ .NET developers in Flanders.
+        This list serves as the foundation for our further analysis, providing a targeted set of companies known to employ .NET developers in Belgium.
         """)
 
     # Step 3: Company Data Collection
@@ -222,10 +222,135 @@ def main():
            - Founded year
            - Specialties
            - Website URL
+           - Company description
+           - ...
         3. Organizing and structuring the collected data for analysis.
 
         This step enriches our dataset with valuable company-level information, allowing for more in-depth analysis and insights about the organizations employing .NET developers in Flanders.
+        Note: Companies associated with .NET developer profiles that have an empty company_id are excluded from the final dataset. The impact on completeness is expected to be minimal.
         """)
+
+    # Add this new section for the query visualization
+    conn = connect_to_db()
+    cur = conn.cursor()
+
+    # Execute the query
+    cur.execute("""
+    WITH kenze_profile_search AS (
+        SELECT DISTINCT
+            companyid
+        FROM
+            kenze_profile_search
+        WHERE
+            companyid IS NOT NULL
+            AND companyid != ''
+            AND net_profile = TRUE
+    ),
+    cli_search AS (
+        SELECT
+            company_id,
+            enrichment_timestamp
+        FROM
+            cli
+    )
+    SELECT
+        count(a.companyid) as companies_found,
+        count(b.company_id) as companies_enirched,
+        CASE 
+        WHEN count(a.companyid) > 0 THEN
+            ROUND((count(b.company_id)::DECIMAL / count(a.companyid)::DECIMAL) * 100, 1)
+        ELSE
+            0
+    END as percentage_complete
+    FROM
+        kenze_profile_search AS a
+        FULL JOIN cli_search AS b on a.companyid = b.company_id::VARCHAR
+    where a.companyid is not null
+    """)
+
+    result = cur.fetchone()
+    companies_found, companies_enriched, percentage_complete = result
+
+    # Create a more fancy bar chart
+    fig = go.Figure()
+
+    # Add bars
+    fig.add_trace(go.Bar(
+        x=['Companies'],
+        y=[companies_found],
+        name='Companies Found',
+        marker_color='royalblue',
+        text=[companies_found],
+        textposition='outside',
+        hoverinfo='y+name'
+    ))
+
+    fig.add_trace(go.Bar(
+        x=['Companies'],
+        y=[companies_enriched],
+        name='Companies Enriched',
+        marker_color='lightgreen',
+        text=[companies_enriched],
+        textposition='outside',
+        hoverinfo='y+name'
+    ))
+
+    # Customize the layout
+    fig.update_layout(
+        title={
+            'text': 'Company Data Enrichment Progress',
+            'y':0.95,
+            'x':0.5,
+            'xanchor': 'center',
+            'yanchor': 'top',
+            'font': dict(size=24)
+        },
+        xaxis_title='',
+        yaxis_title='Number of Companies',
+        barmode='group',
+        bargap=0.3,
+        bargroupgap=0.1,
+        legend=dict(
+            x=0.5,
+            y=-0.15,
+            xanchor='center',
+            yanchor='top',
+            orientation='h'
+        ),
+        plot_bgcolor='rgba(0,0,0,0)',
+        annotations=[
+            dict(
+                x=0.5,
+                y=max(companies_found, companies_enriched) * 1.1,
+                xref="paper",
+                yref="y",
+                text=f"Completion: {percentage_complete}%",
+                showarrow=False,
+                font=dict(size=20, color='green')
+            )
+        ]
+    )
+
+    # Update axes
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='lightgray')
+
+    # Add a shape to show the target
+    fig.add_shape(
+        type="line",
+        x0=-0.5, y0=companies_found, x1=0.5, y1=companies_found,
+        line=dict(color="red", width=3, dash="dash"),
+    )
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Display additional information
+    st.info(f"""
+    - Total companies found: {companies_found}
+    - Companies enriched with LinkedIn data: {companies_enriched}
+    - Percentage complete: {percentage_complete}%
+    """)
 
     # Step 4: Employee Profile Scraping
     st.markdown("### 📊 Step 4: Employee Profile Scraping")
