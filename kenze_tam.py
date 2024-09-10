@@ -114,7 +114,7 @@ def main():
             
             This project is based on the following assumptions:
             1. LinkedIn is the most accurate & up-to-date source for company and employee data.
-            2. Every .NET developer mentioned this in their profile.
+            2. Every .NET developer mentions this on their profile.
             3. Every LinkedIn profile has an associated LinkedIn company identification.
             
             """)
@@ -225,7 +225,7 @@ def main():
         2. Removing duplicates to create a list of unique companies.
         3. Validating the company information to ensure accuracy.
 
-        This list serves as the foundation for our further analysis, providing a targeted set of companies known to employ .NET developers in Belgium.
+        This list serves as the foundation for downstream analysis, providing a targeted set of companies known to employ .NET developers in Belgium.
         """)
 
     # Step 3: Company Data Collection
@@ -1033,8 +1033,28 @@ def main():
             with col1:  # Left column for filters
                 map_filters = st.expander("Map Filters", expanded=True)
                 with map_filters:
-                    map_industries = st.multiselect("Filter by LinkedIn Industry", df_belgium['industry'].unique())
-                    map_categories = st.multiselect("Filter by Google My Business Category", df_belgium['category'].unique())
+                    map_industries = st.multiselect("Exclude LinkedIn Industry", df_belgium['industry'].unique())
+                    map_categories = st.multiselect("Exclude Google My Business Category", df_belgium['category'].unique())
+                    
+                    # New text input for GMB address filter
+                    gmb_address_filter_include = st.text_input("Include Filter GMB Address", "")
+                    gmb_address_filter_exclude = st.text_input("Exclude Filter GMB Address", "")
+                    
+                    # New text input for description exclusion filter
+                    description_filter_exclude = st.text_area("Exclude Filter Description (comma-separated)", "")
+                     # Split the input into a list of keywords, removing any extra spaces
+                    exclude_keywords = [keyword.strip() for keyword in description_filter_exclude.split(',') if keyword.strip()]
+                    
+                    
+                    # New text area for open positions filter
+                    open_positions_filter = st.text_area("Filter Open Positions (comma-separated)", "")
+                    # Split the input into a list of keywords, removing any extra spaces
+                    open_positions_keywords = [keyword.strip() for keyword in open_positions_filter.split(',') if keyword.strip()]
+                    
+                    # New text area for excluding keywords in open positions
+                    open_positions_exclude_filter = st.text_area("Exclude Filter Open Positions (comma-separated)", "")
+                    # Split the input into a list of keywords, removing any extra spaces
+                    open_positions_exclude_keywords = [keyword.strip() for keyword in open_positions_exclude_filter.split(',') if keyword.strip()]
                     
                     # New slider for employee count
                     employee_count_range = st.slider("Select Employee Count Range", 0, int(df_belgium['employee_count'].max()), (0, int(df_belgium['employee_count'].max())), 1)
@@ -1045,18 +1065,27 @@ def main():
                     # New slider filters for ratios
                     net_profile_ratio_range = st.slider("Select .NET Profile vs Total Ratio Range", 0.0, 100.0, (0.0, 100.0), 0.1)
                     it_executive_ratio_range = st.slider("Select IT Executive vs IT Specialist Ratio Range", 0.0, 100.0, (0.0, 100.0), 0.1)
+                    it_team_percentage_range = st.slider("Select IT Team Percentage Range",    0.0, 100.0, (0.0, 100.0), 0.1)
 
             with col2:  # Right column for the map
                 filtered_map_df = df_belgium[
-                    (df_belgium['industry'].isin(map_industries) if map_industries else True) &
-                    (df_belgium['category'].isin(map_categories) if map_categories else True) &
+                    (~df_belgium['industry'].isin(map_industries) if map_industries else True) &
+                    (~df_belgium['category'].isin(map_categories) if map_categories else True) &
+                    (df_belgium['gmb_address'].str.lower().str.contains(gmb_address_filter_include.lower()) if gmb_address_filter_include else True) &  # Filter by GMB address
+                    (df_belgium['gmb_address'].str.lower().str.contains(gmb_address_filter_exclude.lower()) == False if gmb_address_filter_exclude else True) &  # Exclude by GMB address
+                    (~df_belgium['description'].str.lower().str.contains('|'.join(exclude_keywords)) if exclude_keywords else True) &  # Exclude by description
+                    (df_belgium['wc_open_positions'].str.lower().str.contains('|'.join(open_positions_keywords)) if open_positions_keywords else True) &  # Filter by open positions
+                    (~df_belgium['wc_open_positions'].str.lower().str.contains('|'.join(open_positions_exclude_keywords)) if open_positions_exclude_keywords else True) &  # Exclude by open positions
                     (df_belgium['employee_count'] >= employee_count_range[0]) &
                     (df_belgium['employee_count'] <= employee_count_range[1]) &
                     (df_belgium['net_dev_count'] >= min_net_devs if 'net_dev_count' in df_belgium.columns else True) &
                     (df_belgium['net_profile_vs_total_ratio'] >= net_profile_ratio_range[0]) &
                     (df_belgium['net_profile_vs_total_ratio'] <= net_profile_ratio_range[1]) &
                     (df_belgium['it_executive_vs_it_specialist_ratio'] >= it_executive_ratio_range[0]) &
-                    (df_belgium['it_executive_vs_it_specialist_ratio'] <= it_executive_ratio_range[1])
+                    (df_belgium['it_executive_vs_it_specialist_ratio'] <= it_executive_ratio_range[1]) &
+                    (df_belgium['it_team_percentage'] >= it_team_percentage_range[0]) &  # Filter by IT Team Percentage
+                    (df_belgium['it_team_percentage'] <= it_team_percentage_range[1]) 
+    
                 ]
 
                 if not filtered_map_df.empty:
