@@ -1049,7 +1049,7 @@ def main():
             with col2:  # Right column for the map
                 filtered_map_df = df_belgium[
                     (df_belgium['industry'].isin(map_industries) if map_industries else True) &
-                    (df_belgium['gmb_category'].isin(map_categories) if map_categories else True) &
+                    (df_belgium['category'].isin(map_categories) if map_categories else True) &
                     (df_belgium['employee_count'] >= employee_count_range[0]) &
                     (df_belgium['employee_count'] <= employee_count_range[1]) &
                     (df_belgium['net_dev_count'] >= min_net_devs if 'net_dev_count' in df_belgium.columns else True) &
