@@ -135,13 +135,13 @@ def main():
     # Step 1: Search .NET Profiles
     st.subheader("📊 Step 1: Search .NET Profiles")
 
-    with st.expander("View Documentation", expanded=False):
-        st.info("""
-        Starting with a LinkedIn search, profiles are collected using various keywords such as ".NET" or "dotNET." \n
+    st.info("""
+        Starting with a LinkedIn search, profiles are collected using various keywords such as ".NET" or "dotNET." 
         
-        However, LinkedIn's search results are not always fully accurate when specific filters are applied. \n
+        However, LinkedIn's search results are not always fully accurate when specific filters are applied. 
         
-        The profiles are screened for .NET-related skills and experience, identifying unique companies where employees with .NET skills are employed.\n
+        The profiles are screened for .NET-related skills and experience, identifying unique companies where employees with .NET skills are employed.
+        
         To enable downstream analysis, it is crucial to gather information about these companies. However, not all profiles included employer details, which limited the ability to conduct a comprehensive analysis based on company information.""")
 
     # Connect to the database
@@ -218,8 +218,7 @@ def main():
     # Step 2: Company List Creation
     st.subheader("📊 Step 2: Company List Creation")
 
-    with st.expander("View Documentation", expanded=False):
-        st.info("""
+    st.info("""
         After identifying .NET developers from LinkedIn profiles, a list of unique companies that employ developers is compiled. This step involves:
 
         1. Extracting LinkedIn company identificition (company_id's) from the .NET developers' profiles.
@@ -232,8 +231,7 @@ def main():
     # Step 3: Company Data Collection
     st.subheader("📊 Step 3: Company Data Collection")
 
-    with st.expander("View Documentation", expanded=False):
-        st.info("""
+    st.info("""
         Using a list of companies identified in Step 2, comprehensive data from LinkedIn Company Pages is collected. This process involves:
 
         1. Scraping public information from each company's LinkedIn page.
@@ -249,9 +247,11 @@ def main():
         3. Organizing and structuring the collected data for analysis.
 
         This step enriches our dataset with valuable company-level information, 
-        allowing for more in-depth analysis and insights about the organizations employing .NET developers in Flanders.
+        allowing for more in-depth analysis and insights about the organizations employing .NET developers in Belgium.
         
-        Note: Companies associated with .NET developer profiles that have an empty company_id are excluded from the final dataset. The impact on completeness is expected to be minimal.
+        Note: Companies associated with .NET developer profiles that have an empty company_id are excluded from the final dataset. 
+        
+        The impact on completeness is expected to be minimal.
         """)
 
     # Add this new section for the query visualization
@@ -379,17 +379,18 @@ def main():
     # Step 4: Employee Profile Scraping and Data Processing
     st.subheader("📊 Step 4: Employee Profile Scraping, Data Processing & Labeling")
 
-    with st.expander("View Documentation", expanded=False):
-        st.info("""
-        In this step, the data collection process is expanded to include profiles of all employees from the companies identified in Step 2, followed by comprehensive data processing. This process involves:
+    st.info("""
+        In this step, the data collection process is expanded to include profiles of all employees from the companies identified in Step 2, followed by comprehensive data processing.
+        
+        This process involves:
 
-        ### 1. Data Collection
+        #### 1. Data Collection
 
         - Systematically scraped public LinkedIn profiles of employees from each company
         - Gathered key data points: job titles, skills, experience, and other relevant information
         - Ensured data privacy compliance by only collecting publicly available information
 
-        #### Involved Challenges:
+        ##### Involved Challenges:
 
         - Varying data availability on LinkedIn profiles
         - LinkedIn API restrictions limiting access to bulk data
@@ -399,23 +400,23 @@ def main():
         - Ensuring compliance with LinkedIn's terms of service and data protection regulations
         - Dealing with variations in profile structures and incomplete information
 
-        ### 2. Data Cleaning and Categorization
+        #### 2. Data Cleaning and Categorization
         
-        #### a. .NET Skills Identification:
+        ##### a. .NET Skills Identification:
         - Analyzed profile content to identify employees with .NET-related skills or experience
         - Utilized keyword matching and natural language processing techniques to detect .NET expertise
         - Considered factors such as listed skills, job titles, and project descriptions
 
-        #### b. Seniority Classification:
+        ##### b. Seniority Classification:
         - **Advisor**: Board members, shareholders, chairmen, investors
         - **Executive**: C-level positions, founders, partners, business owners
         - **Senior**: Team leads, heads of departments, senior positions, directors
         - **Specialist**: Default category for roles not matching above criteria    
 
-        #### c. Tenure Calculation:
+        ##### c. Tenure Calculation:
         - Converted text-based duration into numeric values (total months within company)
 
-        #### d. Department Classification:
+        ##### d. Department Classification:
         - Marketing
         - Sales
         - Customer Success
@@ -426,6 +427,7 @@ def main():
         - Operations (default if multiple/no clear department)
 
         This comprehensive approach provides a deeper understanding of workforce composition in companies employing .NET developers. 
+        
         It enables more accurate analysis of seniority levels, tenure, and departmental distribution, offering valuable insights into the structure and expertise within these organizations.
         """)
         
@@ -545,9 +547,9 @@ def main():
     # Step 5: Google My Business (GMB) Profile Scraping
     st.subheader("📊 Step 5: Google My Business (GMB) Profile Scraping")
 
-    with st.expander("View Documentation", expanded=False):
-        st.info("""
+    st.info("""
         To enhance the accuracy and completeness of company data, this step involves collecting Google My Business (GMB) profiles.  
+        
         This step is crucial for obtaining additional financial data and gaining a more comprehensive view of each company's size, industry, and location.
 
         Key aspects of this process include:
@@ -574,6 +576,7 @@ def main():
         - Customer insights: Reviews and ratings provide a sense of company reputation
 
         This step significantly enriches our dataset, providing valuable context about each company's public presence, customer perception, and local business operations. 
+        
         The additional data points allow for more nuanced analysis and insights into the .NET development landscape in Belgium.
         """)
 
@@ -663,9 +666,9 @@ def main():
     # Step 6: Company Website Scraping
     st.subheader("📊 Step 6: Company Website Scraping")
 
-    with st.expander("View Documentation", expanded=False):
-        st.info("""
+    st.info("""
         This step provides insights into the companies' current needs and growth trajectories, especially in relation to .NET development.
+        
         Company website scraping, with a particular focus on job pages, is a crucial step in gathering highly valuable information:
 
         1. Website content provides essential insights into:
@@ -802,8 +805,7 @@ def main():
     # Step 7: Financial Data Scraping
     st.subheader("📊 Step 7: Financial Data Scraping")
 
-    with st.expander("View Documentation", expanded=False):
-        st.info("""
+    st.info("""
         This step involves collecting unstructured financial data into structured data to assess the economic standing of these companies:
 
         1. Identifying reliable sources of financial data for Belgian companies such as the Belgian Business Register.
@@ -1004,8 +1006,6 @@ def main():
     # Convert data to a pandas DataFrame
     df = pd.DataFrame(data, columns=[desc[0] for desc in cur.description])
 
-    # Remove the sidebar filtering section
-    # Instead, we'll use the map filters for all filtering
 
     # Create a geo map
     if 'latitude' in df.columns and 'longitude' in df.columns:
@@ -1028,44 +1028,49 @@ def main():
 
         if not df_belgium.empty:
             st.subheader("Interactive Company Map")
-            map_filters = st.expander("Map Filters", expanded=False)
-            with map_filters:
-                map_industries = st.multiselect("Filter by Industry", df_belgium['industry'].unique())
-                min_employees_map = st.number_input("Minimum Employees", min_value=0, value=0, key="map_min_employees")
-                max_employees_map = st.number_input("Maximum Employees", min_value=0, value=int(df_belgium['employee_count'].max()), key="map_max_employees")
-                if 'net_dev_count' in df_belgium.columns:
-                    min_net_devs = st.number_input("Minimum .NET Developers", min_value=0, value=0, key="map_min_net_devs")
+            col1, col2 = st.columns([1, 2])  # Create two columns
 
-            filtered_map_df = df_belgium[
-                (df_belgium['industry'].isin(map_industries) if map_industries else True) &
-                (df_belgium['employee_count'] >= min_employees_map) &
-                (df_belgium['employee_count'] <= max_employees_map) &
-                (df_belgium['net_dev_count'] >= min_net_devs if 'net_dev_count' in df_belgium.columns else True)
-            ]
+            with col1:  # Left column for filters
+                map_filters = st.expander("Map Filters", expanded=True)
+                with map_filters:
+                    map_industries = st.multiselect("Filter by Industry", df_belgium['industry'].unique())
+                    min_employees_map = st.number_input("Minimum Employees", min_value=0, value=0, key="map_min_employees")
+                    max_employees_map = st.number_input("Maximum Employees", min_value=0, value=int(df_belgium['employee_count'].max()), key="map_max_employees")
+                    if 'net_dev_count' in df_belgium.columns:
+                        min_net_devs = st.number_input("Minimum .NET Developers", min_value=0, value=0, key="map_min_net_devs")
 
-            if not filtered_map_df.empty:
-                m = folium.Map(location=[filtered_map_df['latitude'].mean(), filtered_map_df['longitude'].mean()], zoom_start=8)
-                
-                for idx, row in filtered_map_df.iterrows():
-                    popup_content = f"<strong>{row.get('company_name', 'N/A')}</strong>"
-                    if 'employee_count' in row:
-                        popup_content += f"<br>Employees: {row['employee_count']}"
-                    if 'net_dev_count' in row:
-                        popup_content += f"<br>.NET Devs: {row['net_dev_count']}"
-                    if 'industry' in row:
-                        popup_content += f"<br>Industry: {row['industry']}"
+            with col2:  # Right column for the map
+                filtered_map_df = df_belgium[
+                    (df_belgium['industry'].isin(map_industries) if map_industries else True) &
+                    (df_belgium['employee_count'] >= min_employees_map) &
+                    (df_belgium['employee_count'] <= max_employees_map) &
+                    (df_belgium['net_dev_count'] >= min_net_devs if 'net_dev_count' in df_belgium.columns else True)
+                ]
+
+                if not filtered_map_df.empty:
+                    m = folium.Map(location=[filtered_map_df['latitude'].mean(), filtered_map_df['longitude'].mean()], zoom_start=8)
                     
-                    folium.Marker(
-                        [row['latitude'], row['longitude']],
-                        popup=popup_content,
-                        tooltip=row.get('company_name', 'Company')
-                    ).add_to(m)
-                
-                folium_static(m)
+                    for idx, row in filtered_map_df.iterrows():
+                        popup_content = f"<strong>{row.get('company_name', 'N/A')}</strong>"
+                        if 'employee_count' in row:
+                            popup_content += f"<br>Employees: {row['employee_count']}"
+                        if 'net_dev_count' in row:
+                            popup_content += f"<br>.NET Devs: {row['net_dev_count']}"
+                        if 'industry' in row:
+                            popup_content += f"<br>Industry: {row['industry']}"
+                        
+                        folium.Marker(
+                            [row['latitude'], row['longitude']],
+                            popup=popup_content,
+                            tooltip=row.get('company_name', 'Company')
+                        ).add_to(m)
+                    
+                    folium_static(m)
 
-                # Add a table with company data
-                st.subheader("Filtered Company Data")
-                columns_to_display = ['company_name', 'industry', 'employee_count', 'total', 'it_engineering', 'net_profile', 'net_profile_vs_total_ratio', 'it_team_percentage', 'it_executive_vs_it_specialist_ratio', 'specialist_vs_total_ratio', 'net_profile_vs_it_engineering_ratio', 'technical_executive', 'operations', 'customer_success', 'finance,', 'sales','marketing','human_resources', 'specialist', 'senior', 'executive', 'advisor', 'cli_url', 'founded', 'hq_city', 'tagline', 'cli_website', 'vat_number', 'cover_image', 'description', 'followercount', 'universal_name', 'logo_resulution', 'employee_count_range', 'equity', 'fte_employees', 'profit_loss', 'gross_margin', 'cid', 'gmb_title', 'rating', 'gmb_address', 'category', 'phone_number', 'rating_count', 'wc_description', 'wc_business_type', 'wc_hiring', 'wc_about_section', 'wc_pricing_mentioned', 'wc_trial_available', 'wc_keywords', 'wc_career_urls', 'wc_social_media', 'wc_open_positions', 'wc_ideal_customer_profile', 'wc_case_studies', 'wc_contact_info' ] 
+            # Move the filtered data display outside the columns
+            st.subheader("Filtered Company Data")
+            if not filtered_map_df.empty:
+                columns_to_display = ['company_name', 'industry', 'employee_count', 'total', 'it_engineering', 'net_profile', 'net_profile_vs_total_ratio', 'it_team_percentage', 'it_executive_vs_it_specialist_ratio', 'specialist_vs_total_ratio', 'net_profile_vs_it_engineering_ratio', 'technical_executive', 'operations', 'customer_success', 'finance', 'sales', 'marketing', 'human_resources', 'specialist', 'senior', 'executive', 'advisor', 'cli_url', 'founded', 'hq_city', 'tagline', 'cli_website', 'vat_number', 'cover_image', 'description', 'followercount', 'universal_name', 'logo_resulution', 'employee_count_range', 'equity', 'fte_employees', 'profit_loss', 'gross_margin', 'cid', 'gmb_title', 'rating', 'gmb_address', 'category', 'phone_number', 'rating_count', 'wc_description', 'wc_business_type', 'wc_hiring', 'wc_about_section', 'wc_pricing_mentioned', 'wc_trial_available', 'wc_keywords', 'wc_career_urls', 'wc_social_media', 'wc_open_positions', 'wc_ideal_customer_profile', 'wc_case_studies', 'wc_contact_info'] 
                 if 'net_dev_count' in filtered_map_df.columns:
                     columns_to_display.append('net_dev_count')
                 
