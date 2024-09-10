@@ -1147,7 +1147,6 @@ def main():
         st.warning("Latitude and longitude columns not found in the data.")
 
    
-
 if __name__ == "__main__":
     main()
 
