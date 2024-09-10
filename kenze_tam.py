@@ -1033,18 +1033,30 @@ def main():
             with col1:  # Left column for filters
                 map_filters = st.expander("Map Filters", expanded=True)
                 with map_filters:
-                    map_industries = st.multiselect("Filter by Industry", df_belgium['industry'].unique())
-                    min_employees_map = st.number_input("Minimum Employees", min_value=0, value=0, key="map_min_employees")
-                    max_employees_map = st.number_input("Maximum Employees", min_value=0, value=int(df_belgium['employee_count'].max()), key="map_max_employees")
+                    map_industries = st.multiselect("Filter by LinkedIn Industry", df_belgium['industry'].unique())
+                    map_categories = st.multiselect("Filter by Google My Business Category", df_belgium['category'].unique())
+                    
+                    # New slider for employee count
+                    employee_count_range = st.slider("Select Employee Count Range", 0, int(df_belgium['employee_count'].max()), (0, int(df_belgium['employee_count'].max())), 1)
+                    
                     if 'net_dev_count' in df_belgium.columns:
                         min_net_devs = st.number_input("Minimum .NET Developers", min_value=0, value=0, key="map_min_net_devs")
+                    
+                    # New slider filters for ratios
+                    net_profile_ratio_range = st.slider("Select .NET Profile vs Total Ratio Range", 0.0, 100.0, (0.0, 100.0), 0.1)
+                    it_executive_ratio_range = st.slider("Select IT Executive vs IT Specialist Ratio Range", 0.0, 100.0, (0.0, 100.0), 0.1)
 
             with col2:  # Right column for the map
                 filtered_map_df = df_belgium[
                     (df_belgium['industry'].isin(map_industries) if map_industries else True) &
-                    (df_belgium['employee_count'] >= min_employees_map) &
-                    (df_belgium['employee_count'] <= max_employees_map) &
-                    (df_belgium['net_dev_count'] >= min_net_devs if 'net_dev_count' in df_belgium.columns else True)
+                    (df_belgium['gmb_category'].isin(map_categories) if map_categories else True) &
+                    (df_belgium['employee_count'] >= employee_count_range[0]) &
+                    (df_belgium['employee_count'] <= employee_count_range[1]) &
+                    (df_belgium['net_dev_count'] >= min_net_devs if 'net_dev_count' in df_belgium.columns else True) &
+                    (df_belgium['net_profile_vs_total_ratio'] >= net_profile_ratio_range[0]) &
+                    (df_belgium['net_profile_vs_total_ratio'] <= net_profile_ratio_range[1]) &
+                    (df_belgium['it_executive_vs_it_specialist_ratio'] >= it_executive_ratio_range[0]) &
+                    (df_belgium['it_executive_vs_it_specialist_ratio'] <= it_executive_ratio_range[1])
                 ]
 
                 if not filtered_map_df.empty:
