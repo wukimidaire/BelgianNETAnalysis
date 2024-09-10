@@ -993,7 +993,7 @@ def main():
         """)
 
     # You can add a visual representation of the dbt process here if desired
-    st.image("/Users/victordecoster/Code/streamlit_apps/kenze/dbt_lineage.png", caption="dbt Logo", width=900)
+    st.image("dbt_lineage.png", caption="dbt Lineage", width=900)
    
  
 
