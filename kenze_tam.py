@@ -11,7 +11,7 @@ import plotly.express as px
 
 
 # Set page config as the first Streamlit command, outside of any function
-st.set_page_config(layout="wide", page_title="Belgian .NET Organizations Analysis")
+st.set_page_config(layout="wide", page_title="The Belgian .NET Ecosystem Analysis")
 
 # Function to connect to the database
 def connect_to_db():
@@ -60,15 +60,15 @@ def main():
         with col1:
             st.markdown("""
             ### Objective
-            Maps the Belgian .NET ecosystem, offering data-driven insights to guide strategic decisions.
+            Map the Belgian .NET ecosystem, offering data-driven insights to guide strategic decisions.
             The project uses LinkedIn to identify companies with .NET developers and aggregates data from various sources.
-            The data is analyzed to reveal .NET developer distribution, company profiles, hiring trends, and department structures.
+            Data is analyzed to reveal .NET developer distribution, company profiles, hiring trends, and department structures.
             """)
             
             st.markdown("""
             ### Key Insights
             
-            1. **Company Identification**: 1094 unique companies employing .NET developers identified in Flanders.
+            1. **Company Identification**: 1094 unique companies employing .NET developers identified in Belgium.
             2. **Developer Distribution**: Analysis of .NET developer concentration across companies and industries.
             3. **Company Profiles**: Comprehensive profiles including size, industry, location, and financial standing.
             4. **Market Trends**: Insights into hiring patterns, technology adoption, and growth areas in .NET development.
@@ -106,11 +106,11 @@ def main():
                 - Implementation of business logic and calculations
             
             4. **Data Activation**:
-                - t.b.c.
+                - Linkedin Campaigns
             """)
 
         st.markdown("""
-            Project Assumptions
+            **Project Assumptions**
             
             This project is based on the following assumptions:
             1. LinkedIn is the most accurate & up-to-date source for company and employee data.
@@ -386,7 +386,7 @@ def main():
 
         #### 1. Data Collection
 
-        - Systematically scraped public LinkedIn profiles of employees from each company
+        - Systematically scrape public LinkedIn profiles of employees from each company
         - Gathered key data points: job titles, skills, experience, and other relevant information
         - Ensured data privacy compliance by only collecting publicly available information
 
@@ -1033,7 +1033,7 @@ def main():
             col1, col2 = st.columns([1, 2])  # Create two columns
 
             with col1:  # Left column for filters
-                map_filters = st.expander("Map Filters", expanded=True)
+                map_filters = st.expander("Apply Company Filters", expanded=True)
                 with map_filters:
                     map_industries = st.multiselect("Exclude LinkedIn Industry", df_belgium['industry'].unique())
                     map_categories = st.multiselect("Exclude Google My Business Category", df_belgium['category'].unique())
@@ -1201,7 +1201,19 @@ def main():
                     with col2:  # Right column for information
                         # Display the total count of profiles in an info box
                         total_count = len(result_df)
-                        st.info("sdkflsmjdflmsdkfjlsdkf ")
+                        st.info(""" 
+                                ## Granular Campaign Segmentation LinkedIn (and Others) Can't Offer
+
+                                Certain messaging resonates with a specific audience, you can create one of the most advanced filters for list building—filters that go beyond what LinkedIn or any other platform can offer. 
+                                
+                                This level of granularity is unmatched, and fewer than 1% of marketers can achieve or even know how to implement this.
+
+                                Leverage this precision to refine your targeting strategy, ensuring that your campaigns reach the right profiles with the right message. 
+                                
+                                By uploading these highly segmented lists into LinkedIn Campaigns, you can significantly enhance your campaign's effectiveness and results.
+
+                                For more details on LinkedIn Campaigns, check out [LinkedIn's guide](https://www.linkedin.com/help/lms/answer/a1489764) or get in touch [here](https://www.linkedin.com/in/victordecoster).
+                                """)
 
                     # Display the filtered DataFrame (limit to top 10)
                     st.dataframe(result_df.head(10))
