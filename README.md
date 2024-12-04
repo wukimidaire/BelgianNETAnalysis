@@ -144,7 +144,7 @@ An interactive dashboard built with Streamlit to visualize data and track progre
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/yourrepository.git
+   git clone https://github.com/wukimidaire/dotNET_data_mining_streamlit_app.git
    ```
 
 2. **Install Dependencies**
