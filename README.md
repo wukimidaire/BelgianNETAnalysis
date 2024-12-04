@@ -188,12 +188,20 @@ An interactive dashboard built with Streamlit to visualize data and track progre
 - **Data Loading**: Automated loading of processed data into the PostgreSQL database.
 
 ## Project Structure
+
+
 ├── app.py # Main Streamlit application
+
 ├── requirements.txt # Python dependencies
+
 ├── .gitignore # Git ignore file
+
 ├── README.md # Project documentation (this file)
+
 └── .streamlit/
+
 └── secrets.toml # Database credentials (not included in version control)
+
 
 
 
