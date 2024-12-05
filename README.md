@@ -128,6 +128,8 @@ This data mining project aims to map the Belgian .NET ecosystem, offering data-d
   - **Data Quality**: Applies consistent transformations to ensure data integrity.
   - **Performance Optimization**: Pre-aggregates data for improved query performance.
 
+![DBT Lineage](path/to/dbt_lineage.png)
+
 ## Streamlit Application
 
 An interactive dashboard built with Streamlit to visualize data and track progress through each step.
