@@ -128,7 +128,7 @@ This data mining project aims to map the Belgian .NET ecosystem, offering data-d
   - **Data Quality**: Applies consistent transformations to ensure data integrity.
   - **Performance Optimization**: Pre-aggregates data for improved query performance.
 
-![DBT Lineage](path/to/dbt_lineage.png)
+![DBT Lineage](https://github.com/wukimidaire/data_mining_project/blob/development/dbt_lineage.png)
 
 ## Streamlit Application
 
@@ -146,7 +146,7 @@ An interactive dashboard built with Streamlit to visualize data and track progre
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/wukimidaire/dotNET_data_mining_streamlit_app.git
+   git clone https://github.com/wukimidaire/data_mining_streamlit_app.git
    ```
 
 2. **Install Dependencies**
