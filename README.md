@@ -2,7 +2,7 @@
 
 ## Overview
 
-This data mining project aims to map the Belgian .NET ecosystem, offering data-driven insights to guide strategic decisions. The analysis identifies companies in Belgium employing .NET developers, aggregates data from various sources, and reveals insights into developer distribution, company profiles, hiring trends, and department structures.
+This data project aims to map the Belgian .NET ecosystem, offering data-driven insights to guide strategic decisions. The analysis identifies companies in Belgium employing .NET developers, aggregates data from various sources, and reveals insights into developer distribution, company profiles, hiring trends, and department structures.
 
 ## Objectives
 
