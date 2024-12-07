@@ -146,7 +146,7 @@ An interactive dashboard built with Streamlit to visualize data and track progre
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/wukimidaire/data_mining_streamlit_app.git
+   git clone https://github.com/wukimidaire/BelgianNETAnalysis.git
    ```
 
 2. **Install Dependencies**
