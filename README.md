@@ -35,98 +35,156 @@ This data project aims to map the Belgian .NET ecosystem, offering data-driven i
 
 ### Step 1: Search .NET Profiles
 
-- **Data Source**: LinkedIn profiles are collected using keywords like ".NET" and "dotNET".
-- **Process**:
-  - Scrape LinkedIn profiles mentioning .NET skills.
-  - Identify unique companies where these developers are employed.
-- **Challenges**:
-  - Inaccuracies in LinkedIn search results when specific filters are applied.
-  - Some profiles may not include employer details, limiting company-level analysis.
+<details>
+  <summary><strong>Details</strong></summary>
+
+  - **Data Source**: LinkedIn profiles are collected using keywords like ".NET" and "dotNET".
+
+  - **Process**:
+    - Scrape LinkedIn profiles mentioning .NET skills.
+    - Identify unique companies where these developers are employed.
+
+  - **Challenges**:
+    - Inaccuracies in LinkedIn search results when specific filters are applied.
+    - Some profiles may not include employer details, limiting company-level analysis.
+
+</details>
 
 ### Step 2: Company List Creation
 
-- **Process**:
-  - Extract LinkedIn company IDs from .NET developers' profiles.
-  - Remove duplicates to create a unique list of companies.
-  - Validate company information for accuracy.
-- **Outcome**: A targeted set of companies known to employ .NET developers in Belgium.
+<details>
+  <summary><strong>Details</strong></summary>
+
+  - **Process**:
+    - Extract LinkedIn company IDs from .NET developers' profiles.
+    - Remove duplicates to create a unique list of companies.
+    - Validate company information for accuracy.
+
+  - **Outcome**: A targeted set of companies known to employ .NET developers in Belgium.
+
+</details>
 
 ### Step 3: Company Data Collection
 
-- **Data Source**: LinkedIn Company Pages.
-- **Process**:
-  - Scrape public information from each company's page.
-  - Collect data points such as company size, industry, location, founded year, specialties, website URL, and company description.
-- **Challenges**:
-  - Companies without LinkedIn company IDs are excluded, but impact on completeness is minimal.
+<details>
+  <summary><strong>Details</strong></summary>
+
+  - **Data Source**: LinkedIn Company Pages.
+
+  - **Process**:
+    - Scrape public information from each company's page.
+    - Collect data points such as company size, industry, location, founded year, specialties, website URL, and company description.
+
+  - **Challenges**:
+    - Companies without LinkedIn company IDs are excluded, but impact on completeness is minimal.
+
+</details>
 
 ### Step 4: Employee Profile Scraping and Data Processing
 
-- **Data Source**: Public LinkedIn profiles of employees from identified companies.
-- **Process**:
-  - Scrape employee profiles, gathering job titles, skills, experience, etc.
-  - **Data Cleaning and Categorization**:
-    - **.NET Skills Identification**: Detect .NET expertise using keyword matching and NLP techniques.
-    - **Seniority Classification**:
-      - **Advisor**: Board members, shareholders.
-      - **Executive**: C-level positions, founders.
-      - **Senior**: Team leads, department heads.
-      - **Specialist**: Default category for others.
-    - **Department Classification**: Marketing, Sales, IT/Engineering, etc.
-    - **Tenure Calculation**: Convert duration texts into numeric months.
-- **Challenges**:
-  - Varying data availability on profiles.
-  - LinkedIn API restrictions and need for proxy servers.
+<details>
+  <summary><strong>Details</strong></summary>
+
+  - **Data Source**: Public LinkedIn profiles of employees from identified companies.
+
+  - **Process**:
+    - Scrape employee profiles, gathering job titles, skills, experience, etc.
+  
+    - **Data Cleaning and Categorization**:
+      - **.NET Skills Identification**: Detect .NET expertise using keyword matching and NLP techniques.
+      - **Seniority Classification**:
+        - **Advisor**: Board members, shareholders.
+        - **Executive**: C-level positions, founders.
+        - **Senior**: Team leads, department heads.
+        - **Specialist**: Default category for others.
+      - **Department Classification**: Marketing, Sales, IT/Engineering, etc.
+      - **Tenure Calculation**: Convert duration texts into numeric months.
+
+  - **Challenges**:
+    - Varying data availability on profiles.
+    - LinkedIn API restrictions and need for proxy servers.
+
+</details>
 
 ### Step 5: Google My Business (GMB) Profile Scraping
 
-- **Data Source**: Google My Business.
-- **Process**:
-  - Automate searches for each company on GMB.
-  - Extract activity descriptions, addresses, contact details, customer reviews, etc.
-- **Benefits**:
-  - Improved data accuracy by cross-referencing multiple sources.
-  - Enhanced company profiles with detailed and up-to-date information.
-- **Challenges**:
-  - Handling rate limiting and ensuring efficient data collection.
-  - Resolving conflicts between different data sources.
+<details>
+  <summary><strong>Details</strong></summary>
+
+  - **Data Source**: Google My Business.
+
+  - **Process**:
+    - Automate searches for each company on GMB.
+    - Extract activity descriptions, addresses, contact details, customer reviews, etc.
+
+  - **Benefits**:
+    - Improved data accuracy by cross-referencing multiple sources.
+    - Enhanced company profiles with detailed and up-to-date information.
+
+  - **Challenges**:
+    - Handling rate limiting and ensuring efficient data collection.
+    - Resolving conflicts between different data sources.
+
+</details>
 
 ### Step 6: Company Website Scraping
 
-- **Data Source**: Company websites, focusing on job pages.
-- **Process**:
-  - Develop tailored web scrapers for different website structures.
-  - Extract insights on:
-    - Business type and industry focus.
-    - Products or services offered.
-    - Current hiring needs and technical stacks.
-    - Company culture and values.
-- **Benefits**:
-  - Provides insights into companies' growth trajectories and technical preferences.
-- **Challenges**:
-  - Varying website structures and data availability.
-  - Dealing with incomplete or inconsistent data.
+<details>
+  <summary><strong>Details</strong></summary>
+
+  - **Data Source**: Company websites, focusing on job pages.
+
+  - **Process**:
+    - Develop tailored web scrapers for different website structures.
+    - Extract insights on:
+      - Business type and industry focus.
+      - Products or services offered.
+      - Current hiring needs and technical stacks.
+      - Company culture and values.
+
+  - **Benefits**:
+    - Provides insights into companies' growth trajectories and technical preferences.
+
+  - **Challenges**:
+    - Varying website structures and data availability.
+    - Dealing with incomplete or inconsistent data.
+
+</details>
 
 ### Step 7: Financial Data Scraping
 
-- **Data Source**: Financial records from reliable sources (e.g., Belgian Business Register).
-- **Process**:
-  - Collect key financial metrics: annual revenue, profit margins, growth rates, employee count over time.
-  - Compile and standardize data for comparative analysis.
-- **Benefits**:
-  - Assess economic standing of companies employing .NET developers.
-- **Challenges**:
-  - Ensuring data accuracy and resolving discrepancies.
+<details>
+  <summary><strong>Details</strong></summary>
+
+  - **Data Source**: Financial records from reliable sources (e.g., Belgian Business Register).
+
+  - **Process**:
+    - Collect key financial metrics: annual revenue, profit margins, growth rates, employee count over time.
+    - Compile and standardize data for comparative analysis.
+
+  - **Benefits**:
+    - Assess economic standing of companies employing .NET developers.
+
+  - **Challenges**:
+    - Ensuring data accuracy and resolving discrepancies.
+
+</details>
 
 ### Step 8: Data Aggregation and Transformation with dbt
 
-- **Process**:
-  - Use dbt to integrate and transform data from multiple sources.
-  - Create a unified, analysis-ready dataset.
-- **Benefits**:
-  - **Data Integration**: Combines information into a single source of truth.
-  - **Data Quality**: Applies consistent transformations to ensure data integrity.
-  - **Performance Optimization**: Pre-aggregates data for improved query performance.
+<details>
+  <summary><strong>Details</strong></summary>
+
+  - **Process**:
+    - Use dbt to integrate and transform data from multiple sources.
+    - Create a unified, analysis-ready dataset.
+
+  - **Benefits**:
+    - **Data Integration**: Combines information into a single source of truth.
+    - **Data Quality**: Applies consistent transformations to ensure data integrity.
+    - **Performance Optimization**: Pre-aggregates data for improved query performance.
+
+</details>
 
 ![DBT Lineage](https://github.com/wukimidaire/data_mining_project/blob/development/dbt_lineage.png)
 
@@ -141,42 +199,47 @@ An interactive dashboard built with Streamlit to visualize data and track progre
 - **Data Filters**: Apply various filters to explore specific data segments.
 - **Progress Tracking**: Overviews of data collection and processing progress.
 
-### How to Run the Application
+### Run the Application
 
-1. **Clone the Repository**
+<details>
+  <summary><strong>Details</strong></summary>
 
-   ```bash
-   git clone https://github.com/wukimidaire/BelgianNETAnalysis.git
-   ```
+  1. **Clone the Repository**
+  
+     ```bash
+     git clone https://github.com/wukimidaire/BelgianNETAnalysis.git
+     ```
+  
+  2. **Install Dependencies**
+  
+     Ensure you have Python 3.7 or higher installed.
+  
+     ```bash
+     pip install -r requirements.txt
+     ```
+  
+  3. **Set Up Database Credentials**
+  
+     Create a `.streamlit/secrets.toml` file with your database credentials:
+  
+     ```toml
+     [DB]
+     DB_NAME = "your_database_name"
+     DB_USER = "your_username"
+     DB_PASSWORD = "your_password"
+     DB_HOST = "your_host"
+     DB_PORT = "your_port"
+     ```
+  
+     Alternatively, you can set environment variables or use a `.env` file.
+  
+  4. **Run the Application**
+  
+     ```bash
+     streamlit run app.py
+     ```
 
-2. **Install Dependencies**
-
-   Ensure you have Python 3.7 or higher installed.
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Set Up Database Credentials**
-
-   Create a `.streamlit/secrets.toml` file with your database credentials:
-
-   ```toml
-   [DB]
-   DB_NAME = "your_database_name"
-   DB_USER = "your_username"
-   DB_PASSWORD = "your_password"
-   DB_HOST = "your_host"
-   DB_PORT = "your_port"
-   ```
-
-   Alternatively, you can set environment variables or use a `.env` file.
-
-4. **Run the Application**
-
-   ```bash
-   streamlit run app.py
-   ```
+</details>
 
 ## Database Setup
 
@@ -191,47 +254,48 @@ An interactive dashboard built with Streamlit to visualize data and track progre
 
 ## Project Structure
 
-
+```
 ├── app.py # Main Streamlit application
-
 ├── requirements.txt # Python dependencies
-
 ├── .gitignore # Git ignore file
-
 ├── README.md # Project documentation (this file)
-
 └── .streamlit/
-
 └── secrets.toml # Database credentials (not included in version control)
+```
 
 
 
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
+<details>
+  <summary><strong>Details</strong></summary>
 
-1. **Fork the Repository**
-2. **Create a New Branch**
+  Contributions are welcome! Please follow these steps:
 
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
+  1. **Fork the Repository**
+  2. **Create a New Branch**
+  
+     ```bash
+     git checkout -b feature/your-feature-name
+     ```
 
-3. **Make Your Changes**
-4. **Commit Your Changes**
+  3. **Make Your Changes**
+  4. **Commit Your Changes**
+  
+     ```bash
+     git commit -m "Add your commit message"
+     ```
 
-   ```bash
-   git commit -m "Add your commit message"
-   ```
+  5. **Push to the Branch**
+  
+     ```bash
+     git push origin feature/your-feature-name
+     ```
 
-5. **Push to the Branch**
+  6. **Open a Pull Request**
 
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-6. **Open a Pull Request**
+</details>
 
 ## License
 
@@ -239,10 +303,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any inquiries or support, please contact:
+For any inquiries or support, [LinkedIn](https://www.linkedin.com/in/victordecoster)
 
-- **Victor De Coster**
-- **LinkedIn**: [Victor De Coster](https://www.linkedin.com/in/victordecoster)
+
 
 ---
 
